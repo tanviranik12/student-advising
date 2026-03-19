@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Admin & Advising Portal</title>
+<style>
+:root {
+  --bg: #070b14;
+  --card: rgba(13,20,36,0.85);
+  --sidebar-bg: rgba(7,11,20,0.97);
+  --border: rgba(56,189,248,0.12);
+  --border-h: rgba(56,189,248,0.32);
+  --accent: #38bdf8;
+  --accent2: #818cf8;
+  --asoft: rgba(56,189,248,0.10);
+  --green: #22c55e;
+  --gsoft: rgba(34,197,94,0.12);
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --topbar-h: 62px;
+  --sidebar-w: 268px;
+  --r: 14px;
+  --r-sm: 8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Inter",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:var(--sidebar-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;backdrop-filter:blur(20px)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#38bdf8,#818cf8);display:flex;align-items:center;justify-content:center;font-size:18px}
+.brand h1{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.brand p{font-size:11px;color:var(--text3);margin-top:1px}
+.topbar-r{display:flex;align-items:center;gap:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
+.badge{padding:5px 12px;border-radius:999px;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.08);font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+
+/* LAYOUT */
+.app{display:flex;padding-top:var(--topbar-h);height:100dvh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;height:calc(100dvh - var(--topbar-h));background:var(--sidebar-bg);border-right:1px solid var(--border);overflow-y:auto;padding:20px 12px;backdrop-filter:blur(20px)}
+.slabel{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:0 8px;margin-bottom:10px;display:block}
+.nav{display:flex;flex-direction:column;gap:3px}
+.ni{all:unset;display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;cursor:pointer;border:1px solid transparent;width:100%;transition:all .18s}
+.ni:hover{background:var(--asoft);border-color:var(--border)}
+.ni.active{background:linear-gradient(135deg,rgba(56,189,248,.14),rgba(129,140,248,.11));border-color:rgba(56,189,248,.28)}
+.ni-icon{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all .18s}
+.ni.active .ni-icon{background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(129,140,248,.18));border-color:rgba(56,189,248,.4)}
+.ni-lbl strong{font-size:13px;font-weight:600;color:var(--text2);display:block;transition:color .18s}
+.ni-lbl small{font-size:11px;color:var(--text3);display:block;margin-top:1px}
+.ni.active .ni-lbl strong{color:var(--text)}
+.ni-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:0;transition:opacity .18s;flex-shrink:0}
+.ni.active .ni-dot{opacity:1;box-shadow:0 0 8px var(--accent)}
+
+/* CONTENT */
+.content{flex:1;min-width:0;height:calc(100dvh - var(--topbar-h));overflow-y:auto;background:radial-gradient(ellipse at 20% 0%,rgba(56,189,248,.05) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(129,140,248,.05) 0%,transparent 50%),var(--bg)}
+.sw{padding:28px 32px;min-height:100%;animation:fin .25s ease}
+@keyframes fin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION HEAD */
+.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.sh-l h2{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.sh-l p{font-size:13px;color:var(--text2);margin-top:4px}
+.spill{padding:6px 14px;border-radius:999px;background:var(--gsoft);border:1px solid rgba(34,197,94,.3);font-size:11px;font-weight:600;color:#86efac;white-space:nowrap}
+
+/* SUB-TABS */
+.stabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.stab{all:unset;display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .18s;white-space:nowrap}
+.stab:hover{border-color:var(--border-h);color:var(--text2);background:var(--asoft)}
+.stab.active{background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(129,140,248,.14));border-color:rgba(56,189,248,.4);color:var(--accent);font-weight:600}
+.sp{display:none}
+.sp.active{display:block;animation:fin .2s ease}
+.dsp{display:none}
+.dsp.active{display:block;animation:fin .2s ease}
+.ssp{display:none}
+.ssp.active{display:block;animation:fin .2s ease}
+.csp{display:none}
+.csp.active{display:block;animation:fin .2s ease}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;backdrop-filter:blur(12px)}
+.card+.card{margin-top:16px}
+.ct{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.cd{font-size:12px;color:var(--text2);margin-bottom:18px}
+
+/* FORM */
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:16px}
+.fg.c2{grid-template-columns:repeat(2,1fr)}
+.fg.c3{grid-template-columns:repeat(3,1fr)}
+.f{display:flex;flex-direction:column;gap:6px}
+.f label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-transform:uppercase}
+.f input,.f select,.f textarea{background:rgba(7,11,20,.7);border:1px solid rgba(56,189,248,.15);border-radius:var(--r-sm);padding:9px 12px;color:var(--text);font-size:13px;outline:none;transition:border-color .18s,box-shadow .18s;font-family:inherit;width:100%}
+.f textarea{min-height:80px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+.f select option{background:#0d1424}
+.fw{margin-bottom:14px}
+
+/* BUTTONS */
+.btn{all:unset;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
+.bp{background:linear-gradient(135deg,#22c55e,#16a34a);color:#021d0f;box-shadow:0 8px 24px rgba(34,197,94,.3)}
+.bp:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(34,197,94,.4)}
+.bp:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+.br{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* RESULT */
+.rc{margin-top:16px;background:rgba(4,8,18,.8);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.rh{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);background:rgba(56,189,248,.04)}
+.rh span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.rb{padding:16px;font-size:13px;line-height:1.75;color:var(--text2);max-height:320px;overflow-y:auto;white-space:pre-wrap}
+.rb:empty::before{content:"Results will appear here after submission.";color:var(--text3);font-style:italic}
+
+/* RISK */
+.risk{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.rL{background:var(--gsoft);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+.rM{background:rgba(251,146,60,.12);color:#fdba74;border:1px solid rgba(249,115,22,.3)}
+.rH{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}
+.sc{background:rgba(7,11,20,.6);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+.sv{font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sl{font-size:11px;color:var(--text3);margin-top:4px;font-weight:500}
+
+/* INFO BOX */
+.ib{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:10px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);font-size:12px;color:var(--text2);margin-bottom:16px}
+.ib .ic{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--border);font-size:11px;color:var(--text3);cursor:default;transition:all .15s}
+.chip:hover{border-color:var(--border-h);color:var(--text2)}
+
+/* SPINNER */
+.spin{width:16px;height:16px;border:2px solid rgba(56,189,248,.2);border-top-color:var(--accent);border-radius:50%;animation:rot .7s linear infinite;display:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+.spin.on{display:inline-block}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.16)}
+
+@media(max-width:768px){
+  .sidebar{display:none}
+  .sw{padding:16px}
+  .fg.c3{grid-template-columns:repeat(2,1fr)}
+  .stabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:10px}
+}
+
+/* NOTIFICATION BELL */
+.notif-btn{all:unset;position:relative;cursor:pointer;width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .18s}
+.notif-btn:hover{background:var(--asoft);border-color:var(--border-h)}
+.notif-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1;display:none}
+.notif-badge.show{display:flex}
+
+/* NOTIFICATION PANEL */
+.notif-panel{position:fixed;top:calc(var(--topbar-h) + 8px);right:16px;width:340px;max-height:460px;background:rgba(13,20,36,.97);border:1px solid var(--border-h);border-radius:var(--r);box-shadow:0 20px 60px rgba(0,0,0,.7);z-index:200;display:flex;flex-direction:column;backdrop-filter:blur(20px);animation:fin .18s ease}
+.notif-ph{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;flex-shrink:0}
+.notif-ph button{all:unset;cursor:pointer;font-size:11px;font-weight:600;color:var(--text3);padding:4px 10px;border-radius:6px;border:1px solid var(--border);transition:all .15s}
+.notif-ph button:hover{color:var(--text2);border-color:var(--border-h)}
+.notif-list{overflow-y:auto;flex:1}
+.notif-item{display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);animation:fin .2s ease;cursor:default}
+.notif-item:last-child{border-bottom:none}
+.ni-icon2{font-size:18px;flex-shrink:0;margin-top:1px}
+.ni-body strong{font-size:12px;font-weight:700;color:var(--text);display:block}
+.ni-body span{font-size:11px;color:var(--text3);display:block;margin-top:2px;line-height:1.5}
+.notif-empty{padding:32px 16px;text-align:center;font-size:12px;color:var(--text3);font-style:italic}
+
+/* FILE UPLOAD ZONE */
+.upload-zone{border:2px dashed rgba(56,189,248,.25);border-radius:var(--r);padding:36px 24px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(56,189,248,.05)}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-hint{font-size:13px;color:var(--text2);margin-bottom:4px}
+.upload-types{font-size:11px;color:var(--text3)}
+.upload-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.upload-item{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-radius:9px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);font-size:12px;color:var(--text2)}
+.upload-item span{color:var(--green);font-weight:700;font-size:11px}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">🎓</div>
+    <div>
+      <h1>Academic Admin & Advising Portal</h1>
+      <p>Unified workspace · AI-powered advising engine</p>
+    </div>
+  </div>
+  <div class="topbar-r">
+    <div class="dot"></div>
+    <span style="font-size:12px;color:var(--text3)">Gemini AI Active</span>
+    <button class="notif-btn" id="notif-bell" title="Notifications">🔔<span class="notif-badge" id="notif-badge">0</span></button>
+    <div class="badge">AI Assisted</div>
+  </div>
+</header>
+
+<!-- Notification Panel -->
+<div class="notif-panel" id="notif-panel" style="display:none">
+  <div class="notif-ph">
+    <span>🔔 Notifications</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="notif-perm-btn" onclick="requestBrowserNotif()" style="display:none">Enable Alerts</button>
+      <button onclick="clearAllNotifs()">Clear All</button>
+    </div>
+  </div>
+  <div class="notif-list" id="notif-list"><div class="notif-empty">No notifications yet. Results from AI will appear here.</div></div>
+</div>
+
+<div class="app">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <span class="slabel">Modules</span>
+  <div class="nav">
+    <button class="ni active" data-view="advising">
+      <div class="ni-icon">🎯</div>
+      <div class="ni-lbl"><strong>Student Advising</strong><small>Queries, planning & risk</small></div>
+      <div class="ni-dot"></div>
+    </button>
+    <button class="ni" data-view="docs">
+      <div class="ni-icon">📄</div>
+      <div class="ni-lbl"><strong>Documentation</strong><small>Forms, letters & records</small></div>
+      <div class="ni-dot"></div>
+    </button>
+    <button class="ni" data-view="schedule">
+      <div class="ni-icon">📅</div>
+      <div class="ni-lbl"><strong>Scheduling</strong><small>Timetables & deadlines</small></div>
+      <div class="ni-dot"></div>
+    </button>
+    <button class="ni" data-view="comm">
+      <div class="ni-icon">💬</div>
+      <div class="ni-lbl"><strong>Communication</strong><small>Announcements & memos</small></div>
+      <div class="ni-dot"></div>
+    </button>
+  </div>
+</aside>
+
+<!-- CONTENT -->
+<main class="content">
+
+<!-- ══════════ ADVISING ══════════ -->
+<div class="sw" id="view-advising">
+  <div class="sh">
+    <div class="sh-l">
+      <h2>🎯 Student Queries & Advising</h2>
+      <p>AI-powered academic advising — course selection, progression, credit management, internship & escalation support.</p>
+    </div>
+    <div class="spill">Student Advising</div>
+  </div>
+
+  <!-- Sub-tabs -->
+  <div class="stabs">
+    <button class="stab active" data-sub="course-sel">📚 Course Selection</button>
+    <button class="stab" data-sub="progression">📈 Academic Progression</button>
+    <button class="stab" data-sub="credit">🔄 Credit Management</button>
+    <button class="stab" data-sub="internship">💼 Internship & Projects</button>
+    <button class="stab" data-sub="acad-adv">🧭 Academic Advising</button>
+    <button class="stab" data-sub="support">🤝 Advising Support</button>
+    <button class="stab" data-sub="escalation">🚨 Escalation</button>
+  </div>
+
+  <!-- 1. Course Selection -->
+  <div class="sp active" id="sub-course-sel">
+    <div class="card">
+      <div class="ct">📚 Course Selection & Prerequisites</div>
+      <div class="cd">Fill in your academic background to get personalized course recommendations and prerequisite guidance.</div>
+      <div class="fg c2">
+        <div class="f"><label>Education Background</label>
+          <select id="cs-edu">
+            <option value="high-school">High School / Secondary</option>
+            <option value="diploma">Diploma / Foundation</option>
+            <option value="transfer">Transfer Student</option>
+            <option value="direct-entry">Direct Entry (A-Level / IB)</option>
+          </select></div>
+        <div class="f"><label>Current GPA</label><input type="number" id="cs-gpa" min="0" max="4" step="0.01" value="3.00" placeholder="e.g. 3.25"></div>
+        <div class="f"><label>Area of Interest</label>
+          <select id="cs-interest">
+            <option value="ai-ml">Artificial Intelligence / ML</option>
+            <option value="web-dev">Web & Software Development</option>
+            <option value="data-science">Data Science & Analytics</option>
+            <option value="systems">Systems & Networking</option>
+            <option value="cybersecurity">Cybersecurity</option>
+            <option value="embedded">Embedded & IoT</option>
+            <option value="general">General / Undecided</option>
+          </select></div>
+        <div class="f"><label>Math Skill Level</label>
+          <select id="cs-math">
+            <option value="beginner">Beginner — basic arithmetic & algebra</option>
+            <option value="intermediate">Intermediate — calculus & statistics</option>
+            <option value="advanced">Advanced — linear algebra & discrete math</option>
+          </select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-cs">✦ Get Course Recommendations</button><div class="spin" id="sp-cs"></div></div>
+      <div class="rc"><div class="rh"><span>AI Course Guidance</span><div id="st-cs"></div></div><div class="rb" id="out-cs"></div></div>
+    </div>
+  </div>
+
+  <!-- 2. Academic Progression -->
+  <div class="sp" id="sub-progression">
+    <div class="card">
+      <div class="ct">📈 Academic Progression</div>
+      <div class="cd">Track your progress through the programme and get advice on staying on track for graduation.</div>
+      <div class="sg" id="prog-stats"></div>
+      <div class="fg c3">
+        <div class="f"><label>Current Semester</label>
+          <select id="prog-sem">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+            <option selected>5</option><option>6</option><option>7</option><option>8</option>
+          </select></div>
+        <div class="f"><label>Completed Credits</label><input type="number" id="prog-cred" min="0" max="180" value="60" placeholder="e.g. 75"></div>
+        <div class="f"><label>Completed Courses (count)</label><input type="number" id="prog-cnt" min="0" max="60" value="18" placeholder="e.g. 20"></div>
+      </div>
+      <div class="f fw"><label>Remaining / Planned Courses</label><input type="text" id="prog-rem" placeholder="e.g. Data Structures, OS, Networking, Capstone"></div>
+      <div class="br"><button class="btn bp" id="btn-prog">📊 Analyse Progression</button><div class="spin" id="sp-prog"></div></div>
+      <div class="rc"><div class="rh"><span>Progression Analysis</span><div id="st-prog"></div></div><div class="rb" id="out-prog"></div></div>
+    </div>
+  </div>
+
+  <!-- 3. Credit Management -->
+  <div class="sp" id="sub-credit">
+    <div class="card">
+      <div class="ct">🔄 Credit Management</div>
+      <div class="cd">Get guidance on credit transfers, course drop/add procedures, and retake policies.</div>
+      <div class="f fw"><label>Request Type</label>
+        <select id="cr-type">
+          <option value="transfer">Credit Transfer / Exemption</option>
+          <option value="drop-add">Course Drop / Add</option>
+          <option value="retake">Course Retake</option>
+        </select></div>
+
+      <div id="cr-transfer">
+        <div class="ib"><span class="ic">ℹ️</span><span>Credit transfer requests are evaluated against the programme's credit equivalence matrix. Minimum grade C required.</span></div>
+        <div class="fg c2">
+          <div class="f"><label>Course Name (previous institution)</label><input type="text" id="cr-t-course" placeholder="e.g. Introduction to Programming"></div>
+          <div class="f"><label>Credits / Units</label><input type="number" id="cr-t-credits" min="1" max="6" value="3"></div>
+          <div class="f"><label>Grade Obtained</label>
+            <select id="cr-t-grade"><option value="A">A / Distinction</option><option value="B" selected>B / Merit</option><option value="C">C / Pass</option></select></div>
+          <div class="f"><label>Target Equivalent Course</label><input type="text" id="cr-t-target" placeholder="e.g. CS101 – Fundamentals of CS"></div>
+        </div>
+      </div>
+
+      <div id="cr-dropadd" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Course to Drop</label><input type="text" id="cr-d-drop" placeholder="e.g. CS301 – Algorithms"></div>
+          <div class="f"><label>Course to Add</label><input type="text" id="cr-d-add" placeholder="e.g. CS305 – Compiler Design"></div>
+          <div class="f"><label>Reason</label>
+            <select id="cr-d-reason"><option>Schedule conflict</option><option>Prerequisite not met</option><option>Workload adjustment</option><option>Personal circumstances</option></select></div>
+          <div class="f"><label>Current Semester Week</label><input type="number" id="cr-d-week" min="1" max="16" value="2"></div>
+        </div>
+      </div>
+
+      <div id="cr-retake" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Course to Retake</label><input type="text" id="cr-r-course" placeholder="e.g. MATH201 – Calculus II"></div>
+          <div class="f"><label>Previous Grade</label>
+            <select id="cr-r-grade"><option value="F">F – Failed</option><option value="D">D – Below passing</option><option value="C">C – Want to improve</option></select></div>
+          <div class="f"><label>Current GPA</label><input type="number" id="cr-r-gpa" min="0" max="4" step="0.01" value="2.0"></div>
+          <div class="f"><label>Times Attempted</label>
+            <select id="cr-r-att"><option value="1">1st time retaking</option><option value="2">2nd time retaking</option><option value="3">3rd time (final attempt)</option></select></div>
+        </div>
+      </div>
+
+      <div class="br" style="margin-top:16px"><button class="btn bp" id="btn-cr">📋 Get Credit Guidance</button><div class="spin" id="sp-cr"></div></div>
+      <div class="rc"><div class="rh"><span>Credit Management Advice</span><div id="st-cr"></div></div><div class="rb" id="out-cr"></div></div>
+    </div>
+  </div>
+
+  <!-- 4. Internship & Projects -->
+  <div class="sp" id="sub-internship">
+    <div class="card">
+      <div class="ct">💼 Internship & Projects</div>
+      <div class="cd">Check eligibility and get guidance for internships, capstone projects, and final year projects.</div>
+      <div class="f fw"><label>Request Type</label>
+        <select id="int-type">
+          <option value="internship">Internship Eligibility</option>
+          <option value="capstone">Capstone Project</option>
+          <option value="fyp">Final Year Project (FYP)</option>
+        </select></div>
+
+      <div id="int-intern">
+        <div class="fg c3">
+          <div class="f"><label>Current Semester</label><input type="number" id="int-sem" min="1" max="8" value="6"></div>
+          <div class="f"><label>Current GPA</label><input type="number" id="int-gpa" min="0" max="4" step="0.01" value="2.8"></div>
+          <div class="f"><label>Credits Completed</label><input type="number" id="int-cred" min="0" value="90"></div>
+          <div class="f"><label>Duration (weeks)</label><input type="number" id="int-dur" min="8" max="26" value="16"></div>
+          <div class="f"><label>Industry / Domain</label><input type="text" id="int-dom" placeholder="e.g. FinTech, Healthcare"></div>
+        </div>
+      </div>
+
+      <div id="int-cap" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Project Title</label><input type="text" id="cap-title" placeholder="e.g. AI-Powered Student Advisor"></div>
+          <div class="f"><label>Technology Stack</label><input type="text" id="cap-stack" placeholder="e.g. Python, React, PostgreSQL"></div>
+          <div class="f"><label>Team Size</label><input type="number" id="cap-team" min="1" max="5" value="3"></div>
+          <div class="f"><label>Supervisor Assigned</label><select id="cap-sup"><option value="yes">Yes – assigned</option><option value="no">No – need assignment</option></select></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Project Description</label><textarea id="cap-desc" placeholder="Describe scope, objectives, and expected outcomes..."></textarea></div>
+      </div>
+
+      <div id="int-fyp" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Research Area</label><input type="text" id="fyp-area" placeholder="e.g. Natural Language Processing"></div>
+          <div class="f"><label>Methodology</label>
+            <select id="fyp-meth"><option>Experimental / Prototype</option><option>Survey & Analysis</option><option>Comparative Study</option><option>Literature Review + Implementation</option></select></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Research Problem Statement</label><textarea id="fyp-prob" placeholder="Describe the problem and its significance..."></textarea></div>
+      </div>
+
+      <div class="br" style="margin-top:16px"><button class="btn bp" id="btn-int">🚀 Get Guidance</button><div class="spin" id="sp-int"></div></div>
+      <div class="rc"><div class="rh"><span>Internship & Project Guidance</span><div id="st-int"></div></div><div class="rb" id="out-int"></div></div>
+    </div>
+  </div>
+
+  <!-- 5. Academic Advising -->
+  <div class="sp" id="sub-acad-adv">
+    <div class="card">
+      <div class="ct">🧭 Academic Advising</div>
+      <div class="cd">Get a study path recommendation, workload balance check, and probation risk assessment.</div>
+      <div class="fg">
+        <div class="f"><label>Current Semester</label>
+          <select id="adv-sem"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select></div>
+        <div class="f"><label>Current GPA</label><input type="number" id="adv-gpa" min="0" max="4" step="0.01" value="2.50"></div>
+        <div class="f"><label>Planned Courses</label><input type="number" id="adv-plan" min="1" max="10" value="5"></div>
+        <div class="f"><label>Credits Completed</label><input type="number" id="adv-cred" min="0" value="60"></div>
+      </div>
+      <div class="fg c3" style="margin-top:0">
+        <div class="f"><label>Advising Focus</label>
+          <select id="adv-focus">
+            <option value="path">Study Path Recommendation</option>
+            <option value="workload">Workload Balancing</option>
+            <option value="probation">Probation Risk Check</option>
+            <option value="all">Full Assessment (All Three)</option>
+          </select></div>
+        <div class="f"><label>Failed / Incomplete Courses</label><input type="number" id="adv-fail" min="0" max="20" value="0"></div>
+        <div class="f"><label>Part-time / Working?</label>
+          <select id="adv-pt"><option value="no">No – full-time student</option><option value="part">Yes – part-time work</option><option value="full-work">Yes – full-time work</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-adv">🧭 Get Academic Advice</button><div class="spin" id="sp-adv"></div></div>
+      <div class="rc"><div class="rh"><span>Academic Advising Report</span><div id="st-adv"></div></div><div class="rb" id="out-adv"></div></div>
+    </div>
+  </div>
+
+  <!-- 6. Advising Support -->
+  <div class="sp" id="sub-support">
+    <div class="card">
+      <div class="ct">🤝 Advising Support</div>
+      <div class="cd">Schedule advising sessions, access advising records, and search the FAQ knowledge base.</div>
+      <div class="f fw"><label>Support Type</label>
+        <select id="sup-type">
+          <option value="session">Schedule Advising Session</option>
+          <option value="records">View Advising Records</option>
+          <option value="faq">FAQ Handling</option>
+        </select></div>
+
+      <div id="sup-session">
+        <div class="fg c2">
+          <div class="f"><label>Student ID / Name</label><input type="text" id="sup-s-stu" placeholder="e.g. S2021001 – Ali Hassan"></div>
+          <div class="f"><label>Preferred Advisor</label>
+            <select id="sup-s-adv"><option>Department Advisor (Auto-assign)</option><option>Senior Lecturer – Dr. Rahman</option><option>Programme Coordinator</option><option>HOD Office</option></select></div>
+          <div class="f"><label>Preferred Date</label><input type="date" id="sup-s-date"></div>
+          <div class="f"><label>Time Slot</label>
+            <select id="sup-s-time"><option>09:00 – 10:00</option><option>10:00 – 11:00</option><option>11:00 – 12:00</option><option>14:00 – 15:00</option><option>15:00 – 16:00</option></select></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Reason for Session</label><textarea id="sup-s-reason" placeholder="Briefly describe what you'd like to discuss..."></textarea></div>
+      </div>
+
+      <div id="sup-records" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Student ID</label><input type="text" id="sup-r-id" placeholder="e.g. S2021001"></div>
+          <div class="f"><label>Academic Year</label><select id="sup-r-yr"><option>2025/2026</option><option>2024/2025</option><option>2023/2024</option></select></div>
+        </div>
+      </div>
+
+      <div id="sup-faq" style="display:none">
+        <div class="f"><label>Search / Ask a Question</label><input type="text" id="sup-f-q" placeholder="e.g. How do I apply for a credit exemption?"></div>
+        <div class="chips" id="faq-chips"></div>
+      </div>
+
+      <div class="br" style="margin-top:16px"><button class="btn bp" id="btn-sup">🤝 Submit Request</button><div class="spin" id="sp-sup"></div></div>
+      <div class="rc"><div class="rh"><span>Support Response</span><div id="st-sup"></div></div><div class="rb" id="out-sup"></div></div>
+    </div>
+  </div>
+
+  <!-- 7. Escalation -->
+  <div class="sp" id="sub-escalation">
+    <div class="card">
+      <div class="ct">🚨 Escalation</div>
+      <div class="cd">Detect complex academic cases that need human intervention and route them to faculty or HoD.</div>
+      <div class="ib"><span class="ic">⚠️</span><span>Escalation is triggered when a student's case involves multiple risk factors — repeated failures, GPA below 1.5, personal hardship, or unresolved appeals — that cannot be resolved through standard advising.</span></div>
+      <div class="f fw"><label>Escalation Type</label>
+        <select id="esc-type">
+          <option value="detect">Complex Case Detection</option>
+          <option value="redirect">Redirect to Faculty / HoD</option>
+        </select></div>
+
+      <div id="esc-detect">
+        <div class="fg c3">
+          <div class="f"><label>Student GPA</label><input type="number" id="esc-gpa" min="0" max="4" step="0.01" value="1.4"></div>
+          <div class="f"><label>Failed Courses (count)</label><input type="number" id="esc-fail" min="0" value="3"></div>
+          <div class="f"><label>Current Semester</label><input type="number" id="esc-sem" min="1" max="8" value="4"></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Case Description</label><textarea id="esc-desc" placeholder="Describe the student's situation, extenuating circumstances, prior interventions..."></textarea></div>
+      </div>
+
+      <div id="esc-redirect" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Redirect To</label>
+            <select id="esc-to"><option>Programme Coordinator</option><option>Senior Faculty Advisor</option><option>Department Head (HoD)</option><option>Academic Affairs Office</option><option>Student Welfare Office</option></select></div>
+          <div class="f"><label>Urgency Level</label>
+            <select id="esc-urg"><option value="normal">Normal – within 3 working days</option><option value="high">High – within 24 hours</option><option value="critical">Critical – immediate attention</option></select></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Reason for Escalation</label><textarea id="esc-reason" placeholder="Summarize the case and reason for escalation..."></textarea></div>
+      </div>
+
+      <div class="br" style="margin-top:16px"><button class="btn bp" id="btn-esc">🚨 Process Escalation</button><div class="spin" id="sp-esc"></div></div>
+      <div class="rc"><div class="rh"><span>Escalation Assessment</span><div id="st-esc"></div></div><div class="rb" id="out-esc"></div></div>
+    </div>
+  </div>
+</div><!-- end view-advising -->
+
+<!-- ══════════ DOCUMENTATION ══════════ -->
+<div class="sw" id="view-docs" style="display:none">
+  <div class="sh">
+    <div class="sh-l"><h2>📄 Academic Documentation & Administration</h2><p>AI-powered document processing, certificate generation, student records, smart search, compliance, and verification.</p></div>
+    <div class="spill">Documentation</div>
+  </div>
+
+  <!-- Doc Sub-tabs -->
+  <div class="stabs" id="doc-stabs">
+    <button class="stab active" data-dsub="form-proc">📋 Form Processing</button>
+    <button class="stab" data-dsub="cert-mgmt">🏅 Certificates & Letters</button>
+    <button class="stab" data-dsub="student-rec">🗂 Student Records</button>
+    <button class="stab" data-dsub="doc-storage">🗄 Storage & Archive</button>
+    <button class="stab" data-dsub="doc-search">🔍 Search & Retrieval</button>
+    <button class="stab" data-dsub="query-sup">❓ Query & Support</button>
+    <button class="stab" data-dsub="compliance">📆 Compliance & Deadlines</button>
+    <button class="stab" data-dsub="ai-process">🤖 AI Processing</button>
+    <button class="stab" data-dsub="ai-gen">✨ AI Generation</button>
+    <button class="stab" data-dsub="ai-search">🧠 AI Smart Search</button>
+    <button class="stab" data-dsub="chatbot">💬 AI Chatbot</button>
+    <button class="stab" data-dsub="access-ctrl">🔐 Access Control</button>
+    <button class="stab" data-dsub="notif">🔔 Notifications</button>
+    <button class="stab" data-dsub="dashboard">📊 Dashboard</button>
+    <button class="stab" data-dsub="verify">✅ Verification</button>
+    <button class="stab" data-dsub="file-upload">📁 File Upload</button>
+    <button class="stab" data-dsub="pdf-analyse">📄 PDF Analyser</button>
+  </div>
+
+  <!-- 1. Form Processing -->
+  <div class="dsp active" id="dsub-form-proc">
+    <div class="card">
+      <div class="ct">📋 Form Processing</div>
+      <div class="cd">Submit and manage all academic forms — registration, withdrawal, credit transfer, exemption, internship, and capstone approvals.</div>
+      <div class="f fw"><label>Form Type</label>
+        <select id="fp-type">
+          <option value="registration">Course Registration</option>
+          <option value="withdrawal">Course Withdrawal</option>
+          <option value="credit-transfer">Credit Transfer Request</option>
+          <option value="exemption">Course Exemption</option>
+          <option value="internship">Internship Approval</option>
+          <option value="capstone">Capstone / Project Approval</option>
+        </select></div>
+
+      <div id="fp-registration">
+        <div class="fg c3">
+          <div class="f"><label>Student ID</label><input type="text" id="fp-r-id" placeholder="e.g. S2021001"></div>
+          <div class="f"><label>Student Name</label><input type="text" id="fp-r-name" placeholder="Full name"></div>
+          <div class="f"><label>Programme</label><input type="text" id="fp-r-prog" placeholder="e.g. BSc Computer Science"></div>
+          <div class="f"><label>Semester</label><select id="fp-r-sem"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select></div>
+          <div class="f"><label>Course Code</label><input type="text" id="fp-r-code" placeholder="e.g. CS301"></div>
+          <div class="f"><label>Course Name</label><input type="text" id="fp-r-cname" placeholder="e.g. Data Structures"></div>
+        </div>
+      </div>
+
+      <div id="fp-withdrawal" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Student ID</label><input type="text" id="fp-w-id" placeholder="e.g. S2021001"></div>
+          <div class="f"><label>Course to Withdraw</label><input type="text" id="fp-w-course" placeholder="e.g. CS301 – Algorithms"></div>
+          <div class="f"><label>Withdrawal Reason</label><select id="fp-w-reason"><option>Medical / Health</option><option>Academic difficulty</option><option>Personal circumstances</option><option>Schedule conflict</option><option>Financial</option></select></div>
+          <div class="f"><label>Current Week</label><input type="number" id="fp-w-week" min="1" max="16" value="4"></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Additional Details</label><textarea id="fp-w-detail" placeholder="Describe the situation briefly..."></textarea></div>
+      </div>
+
+      <div id="fp-credit-transfer" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Student ID</label><input type="text" id="fp-ct-id" placeholder="e.g. S2021001"></div>
+          <div class="f"><label>Previous Institution</label><input type="text" id="fp-ct-inst" placeholder="e.g. UniKL, INTI, Taylor's"></div>
+          <div class="f"><label>Course Completed</label><input type="text" id="fp-ct-course" placeholder="e.g. Introduction to Programming"></div>
+          <div class="f"><label>Credits</label><input type="number" id="fp-ct-cred" min="1" max="6" value="3"></div>
+          <div class="f"><label>Grade</label><select id="fp-ct-grade"><option>A</option><option selected>B</option><option>C</option></select></div>
+          <div class="f"><label>Equivalent Course Here</label><input type="text" id="fp-ct-equiv" placeholder="e.g. CS101"></div>
+        </div>
+      </div>
+
+      <div id="fp-exemption" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Student ID</label><input type="text" id="fp-ex-id" placeholder="e.g. S2021001"></div>
+          <div class="f"><label>Course to Exempt</label><input type="text" id="fp-ex-course" placeholder="e.g. CS101 – Intro to CS"></div>
+          <div class="f"><label>Basis for Exemption</label><select id="fp-ex-basis"><option>Professional certification</option><option>Industry experience</option><option>Prior degree coursework</option><option>Standardised test score</option></select></div>
+          <div class="f"><label>Supporting Evidence</label><input type="text" id="fp-ex-evidence" placeholder="e.g. AWS Certified, 3 years exp."></div>
+        </div>
+      </div>
+
+      <div id="fp-internship" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Student ID</label><input type="text" id="fp-int-id" placeholder="e.g. S2021001"></div>
+          <div class="f"><label>Company Name</label><input type="text" id="fp-int-co" placeholder="e.g. Petronas Digital"></div>
+          <div class="f"><label>Duration (weeks)</label><input type="number" id="fp-int-dur" min="8" max="26" value="16"></div>
+          <div class="f"><label>Start Date</label><input type="date" id="fp-int-start"></div>
+          <div class="f"><label>Role / Position</label><input type="text" id="fp-int-role" placeholder="e.g. Software Engineer Intern"></div>
+          <div class="f"><label>Supervisor GPA Check</label><select id="fp-int-gpa"><option value="ok">GPA 2.5+</option><option value="low">GPA below 2.5</option></select></div>
+        </div>
+      </div>
+
+      <div id="fp-capstone" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Student ID / Group</label><input type="text" id="fp-cap-id" placeholder="e.g. G2024-03"></div>
+          <div class="f"><label>Project Title</label><input type="text" id="fp-cap-title" placeholder="e.g. Smart Campus IoT System"></div>
+          <div class="f"><label>Supervisor</label><input type="text" id="fp-cap-sup" placeholder="e.g. Dr. Rahman"></div>
+          <div class="f"><label>Team Size</label><input type="number" id="fp-cap-team" min="1" max="6" value="3"></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Project Abstract</label><textarea id="fp-cap-abstract" placeholder="Brief description of the project scope and objectives..."></textarea></div>
+      </div>
+
+      <div class="br" style="margin-top:16px"><button class="btn bp" id="btn-fp">📋 Submit Form</button><div class="spin" id="sp-fp"></div></div>
+      <div class="rc"><div class="rh"><span>Form Processing Response</span><div id="st-fp"></div></div><div class="rb" id="out-fp"></div></div>
+    </div>
+  </div>
+
+  <!-- 2. Certificate & Letter Management -->
+  <div class="dsp" id="dsub-cert-mgmt">
+    <div class="card">
+      <div class="ct">🏅 Certificate & Letter Management</div>
+      <div class="cd">Generate and manage official academic certificates, bonafide letters, NOCs, recommendations, and transcripts.</div>
+      <div class="f fw"><label>Document Type</label>
+        <select id="cl-type">
+          <option value="academic-cert">Academic Certificate</option>
+          <option value="bonafide">Bonafide Certificate</option>
+          <option value="noc">No Objection Certificate (NOC)</option>
+          <option value="recommendation">Recommendation Letter</option>
+          <option value="transcript">Transcript Request</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Student ID</label><input type="text" id="cl-id" placeholder="e.g. S2021001"></div>
+        <div class="f"><label>Student Name</label><input type="text" id="cl-name" placeholder="Full name"></div>
+        <div class="f"><label>Programme</label><input type="text" id="cl-prog" placeholder="e.g. BSc Computer Science"></div>
+        <div class="f"><label>Academic Year</label><select id="cl-year"><option>2025/2026</option><option>2024/2025</option><option>2023/2024</option></select></div>
+        <div class="f"><label>Purpose / Addressed To</label><input type="text" id="cl-purpose" placeholder="e.g. Visa application, scholarship"></div>
+        <div class="f"><label>Requested By</label><select id="cl-reqby"><option value="student">Student</option><option value="faculty">Faculty</option><option value="admin">Admin</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-cl">🏅 Generate Document</button><div class="spin" id="sp-cl"></div></div>
+      <div class="rc"><div class="rh"><span>Generated Document</span><div id="st-cl"></div></div><div class="rb" id="out-cl"></div></div>
+    </div>
+  </div>
+
+  <!-- 3. Student Record Management -->
+  <div class="dsp" id="dsub-student-rec">
+    <div class="card">
+      <div class="ct">🗂 Student Record Management</div>
+      <div class="cd">View, update, and manage student profiles, academic history, course records, and GPA/CGPA tracking.</div>
+      <div class="f fw"><label>Action</label>
+        <select id="sr-action">
+          <option value="profile">View Student Profile</option>
+          <option value="history">Academic History</option>
+          <option value="results">Course & Result Records</option>
+          <option value="gpa">GPA / CGPA Tracking</option>
+          <option value="correction">Data Update & Correction</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Student ID</label><input type="text" id="sr-id" placeholder="e.g. S2021001"></div>
+        <div class="f"><label>Student Name</label><input type="text" id="sr-name" placeholder="Full name"></div>
+      </div>
+      <div id="sr-gpa-fields" style="display:none">
+        <div class="fg c3">
+          <div class="f"><label>Current Semester</label><input type="number" id="sr-sem" min="1" max="8" value="5"></div>
+          <div class="f"><label>Total Credits Completed</label><input type="number" id="sr-cred" min="0" value="75"></div>
+          <div class="f"><label>Current CGPA</label><input type="number" id="sr-cgpa" min="0" max="4" step="0.01" value="3.10"></div>
+        </div>
+      </div>
+      <div id="sr-correction-fields" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Field to Correct</label><select id="sr-field"><option>Name</option><option>IC / Passport Number</option><option>Programme</option><option>Course Grade</option><option>Credit Hours</option><option>Personal Info</option></select></div>
+          <div class="f"><label>Correction Details</label><input type="text" id="sr-correction" placeholder="Describe the change needed"></div>
+        </div>
+      </div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-sr">🗂 Process Request</button><div class="spin" id="sp-sr"></div></div>
+      <div class="rc"><div class="rh"><span>Record Response</span><div id="st-sr"></div></div><div class="rb" id="out-sr"></div></div>
+    </div>
+  </div>
+
+  <!-- 4. Document Storage & Archive -->
+  <div class="dsp" id="dsub-doc-storage">
+    <div class="card">
+      <div class="ct">🗄 Document Storage & Archive</div>
+      <div class="cd">Manage digital storage, categorize documents, archive old records, and control secure access.</div>
+      <div class="f fw"><label>Operation</label>
+        <select id="ds-op">
+          <option value="upload">File Upload</option>
+          <option value="categorize">Document Categorization</option>
+          <option value="archive">Archive Records</option>
+          <option value="access">Secure Access Control</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Document Name</label><input type="text" id="ds-name" placeholder="e.g. Transcript_S2021001.pdf"></div>
+        <div class="f"><label>Document Category</label>
+          <select id="ds-cat"><option>Academic Certificate</option><option>Transcript</option><option>Form / Application</option><option>Letter</option><option>Student Record</option><option>Internship Document</option><option>Research / Project</option></select></div>
+        <div class="f"><label>Student ID</label><input type="text" id="ds-sid" placeholder="e.g. S2021001"></div>
+        <div class="f"><label>Academic Year</label><select id="ds-year"><option>2025/2026</option><option>2024/2025</option><option>2023/2024</option></select></div>
+        <div class="f"><label>Access Level</label><select id="ds-access"><option value="student">Student Only</option><option value="faculty">Faculty & Admin</option><option value="admin">Admin Only</option><option value="public">Public Verification</option></select></div>
+        <div class="f"><label>Retention Period</label><select id="ds-retain"><option>1 Year</option><option>3 Years</option><option>5 Years</option><option>Permanent</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-ds">🗄 Process Storage Request</button><div class="spin" id="sp-ds"></div></div>
+      <div class="rc"><div class="rh"><span>Storage Response</span><div id="st-ds"></div></div><div class="rb" id="out-ds"></div></div>
+    </div>
+  </div>
+
+  <!-- 5. Document Search & Retrieval -->
+  <div class="dsp" id="dsub-doc-search">
+    <div class="card">
+      <div class="ct">🔍 Document Search & Retrieval</div>
+      <div class="cd">Search, filter, preview, and download documents by student ID, type, date range, or status.</div>
+      <div class="fg c2">
+        <div class="f"><label>Search By</label>
+          <select id="dsr-by"><option value="id">Student ID</option><option value="name">Student Name</option><option value="type">Document Type</option><option value="date">Date Range</option></select></div>
+        <div class="f"><label>Search Value</label><input type="text" id="dsr-val" placeholder="Enter search term..."></div>
+        <div class="f"><label>Document Type Filter</label>
+          <select id="dsr-type"><option value="all">All Types</option><option>Certificate</option><option>Transcript</option><option>Form</option><option>Letter</option><option>Internship</option></select></div>
+        <div class="f"><label>Status Filter</label>
+          <select id="dsr-status"><option value="all">All Statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="completed">Completed</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-dsr">🔍 Search Documents</button><div class="spin" id="sp-dsr"></div></div>
+      <div class="rc"><div class="rh"><span>Search Results</span><div id="st-dsr"></div></div><div class="rb" id="out-dsr"></div></div>
+    </div>
+  </div>
+
+  <!-- 6. Query & Support -->
+  <div class="dsp" id="dsub-query-sup">
+    <div class="card">
+      <div class="ct">❓ Query & Support System</div>
+      <div class="cd">Check document status, raise student queries, get admin responses, and browse FAQs.</div>
+      <div class="f fw"><label>Support Type</label>
+        <select id="qs-type">
+          <option value="status">Status Check</option>
+          <option value="query">Student Query</option>
+          <option value="faq">FAQ</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Student ID</label><input type="text" id="qs-sid" placeholder="e.g. S2021001"></div>
+        <div class="f"><label>Reference / Document ID</label><input type="text" id="qs-ref" placeholder="e.g. REQ-2024-0032"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Query / Question</label><textarea id="qs-q" placeholder="Describe your query or question about your document..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-qs">❓ Submit Query</button><div class="spin" id="sp-qs"></div></div>
+      <div class="rc"><div class="rh"><span>Support Response</span><div id="st-qs"></div></div><div class="rb" id="out-qs"></div></div>
+    </div>
+  </div>
+
+  <!-- 7. Compliance & Deadline Management -->
+  <div class="dsp" id="dsub-compliance">
+    <div class="card">
+      <div class="ct">📆 Compliance & Deadline Management</div>
+      <div class="cd">Check university policy compliance, submission deadlines, auto reminders, and approval workflow status.</div>
+      <div class="f fw"><label>Check Type</label>
+        <select id="comp-type">
+          <option value="policy">Policy Check</option>
+          <option value="deadline">Submission Deadlines</option>
+          <option value="reminder">Auto Reminder Setup</option>
+          <option value="workflow">Approval Workflow Status</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Form / Document Type</label>
+          <select id="comp-doc"><option>Course Registration</option><option>Withdrawal</option><option>Credit Transfer</option><option>Internship Approval</option><option>Capstone Approval</option><option>Certificate Request</option></select></div>
+        <div class="f"><label>Current Semester Week</label><input type="number" id="comp-week" min="1" max="16" value="3"></div>
+        <div class="f"><label>Semester</label><select id="comp-sem"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select></div>
+        <div class="f"><label>Student ID (optional)</label><input type="text" id="comp-sid" placeholder="e.g. S2021001"></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-comp">📆 Check Compliance</button><div class="spin" id="sp-comp"></div></div>
+      <div class="rc"><div class="rh"><span>Compliance Response</span><div id="st-comp"></div></div><div class="rb" id="out-comp"></div></div>
+    </div>
+  </div>
+
+  <!-- 8. AI Document Processing -->
+  <div class="dsp" id="dsub-ai-process">
+    <div class="card">
+      <div class="ct">🤖 AI Document Processing</div>
+      <div class="cd">Automatically validate forms, detect missing data, suggest corrections, and extract key information from documents.</div>
+      <div class="f fw"><label>Processing Mode</label>
+        <select id="aip-mode">
+          <option value="validate">Auto Validation</option>
+          <option value="missing">Missing Data Detection</option>
+          <option value="error">Error Suggestion</option>
+          <option value="extract">Data Extraction</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Form / Document Type</label>
+          <select id="aip-doctype"><option>Course Registration</option><option>Withdrawal</option><option>Credit Transfer</option><option>Exemption Request</option><option>Internship Form</option><option>Capstone Form</option></select></div>
+        <div class="f"><label>Student ID</label><input type="text" id="aip-sid" placeholder="e.g. S2021001"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Form Content / Paste Document Text</label><textarea id="aip-content" style="min-height:100px" placeholder="Paste the form content or describe what was submitted..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-aip">🤖 Run AI Processing</button><div class="spin" id="sp-aip"></div></div>
+      <div class="rc"><div class="rh"><span>AI Processing Report</span><div id="st-aip"></div></div><div class="rb" id="out-aip"></div></div>
+    </div>
+  </div>
+
+  <!-- 9. AI Document Generation -->
+  <div class="dsp" id="dsub-ai-gen">
+    <div class="card">
+      <div class="ct">✨ AI Document Generation</div>
+      <div class="cd">Instantly generate certificates, letters, and auto-filled templates using AI. PDF-formatted output ready for official use.</div>
+      <div class="f fw"><label>Generation Type</label>
+        <select id="aig-type">
+          <option value="certificate">Auto Certificate</option>
+          <option value="letter">Letter Generation</option>
+          <option value="template">Smart Template Fill</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Student Name</label><input type="text" id="aig-name" placeholder="Full name"></div>
+        <div class="f"><label>Student ID</label><input type="text" id="aig-sid" placeholder="e.g. S2021001"></div>
+        <div class="f"><label>Programme</label><input type="text" id="aig-prog" placeholder="e.g. BSc Computer Science"></div>
+        <div class="f"><label>Academic Year</label><select id="aig-year"><option>2025/2026</option><option>2024/2025</option><option>2023/2024</option></select></div>
+        <div class="f"><label>Document Purpose</label><input type="text" id="aig-purpose" placeholder="e.g. Scholarship, Visa, Employment"></div>
+        <div class="f"><label>Addressed To</label><input type="text" id="aig-to" placeholder="e.g. Embassy of Japan, Google HR"></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-aig">✨ Generate with AI</button><div class="spin" id="sp-aig"></div></div>
+      <div class="rc"><div class="rh"><span>AI Generated Document</span><div id="st-aig"></div></div><div class="rb" id="out-aig"></div></div>
+    </div>
+  </div>
+
+  <!-- 10. AI Smart Search -->
+  <div class="dsp" id="dsub-ai-search">
+    <div class="card">
+      <div class="ct">🧠 AI Smart Search</div>
+      <div class="cd">Search documents using natural language, get context-aware results, and receive smart suggestions.</div>
+      <div class="f fw"><label>Search Mode</label>
+        <select id="ais-mode">
+          <option value="natural">Natural Language Search</option>
+          <option value="context">Context-based Retrieval</option>
+          <option value="suggest">Smart Suggestion</option>
+        </select></div>
+      <div class="f fw"><label>Your Search Query</label><input type="text" id="ais-q" placeholder="e.g. Show all pending internship approvals for semester 5 students with GPA above 3.0"></div>
+      <div class="fg c2">
+        <div class="f"><label>Scope</label><select id="ais-scope"><option value="all">All Documents</option><option value="forms">Forms Only</option><option value="certs">Certificates Only</option><option value="records">Student Records</option></select></div>
+        <div class="f"><label>Time Period</label><select id="ais-period"><option>Current Semester</option><option>Last 6 Months</option><option>This Academic Year</option><option>All Time</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-ais">🧠 Smart Search</button><div class="spin" id="sp-ais"></div></div>
+      <div class="rc"><div class="rh"><span>Search Results</span><div id="st-ais"></div></div><div class="rb" id="out-ais"></div></div>
+    </div>
+  </div>
+
+  <!-- 11. AI Chatbot -->
+  <div class="dsp" id="dsub-chatbot">
+    <div class="card">
+      <div class="ct">💬 AI Chatbot Support</div>
+      <div class="cd">Ask anything about documents, forms, or status. The AI assistant guides you step by step.</div>
+      <div class="f fw"><label>Help Topic</label>
+        <select id="cb-topic">
+          <option value="guidance">Documentation Help</option>
+          <option value="form-help">Form Guidance</option>
+          <option value="status">Status Tracking</option>
+          <option value="problem">Problem Solving</option>
+        </select></div>
+      <div class="f fw"><label>Your Question</label><textarea id="cb-q" style="min-height:80px" placeholder="Ask anything about forms, documents, submission process, requirements, deadlines..."></textarea></div>
+      <div class="fg c2">
+        <div class="f"><label>Student ID (optional)</label><input type="text" id="cb-sid" placeholder="e.g. S2021001"></div>
+        <div class="f"><label>Role</label><select id="cb-role"><option value="student">Student</option><option value="faculty">Faculty</option><option value="admin">Admin</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-cb">💬 Ask Assistant</button><div class="spin" id="sp-cb"></div></div>
+      <div class="rc"><div class="rh"><span>Assistant Response</span><div id="st-cb"></div></div><div class="rb" id="out-cb"></div></div>
+    </div>
+  </div>
+
+  <!-- 12. Access Control -->
+  <div class="dsp" id="dsub-access-ctrl">
+    <div class="card">
+      <div class="ct">🔐 Access Control</div>
+      <div class="cd">Manage role-based access, permissions, and activity logs for the documentation system.</div>
+      <div class="f fw"><label>Action</label>
+        <select id="ac-action">
+          <option value="roles">Role-based Access Review</option>
+          <option value="permissions">Permission Management</option>
+          <option value="logs">Activity Logs</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>User Role</label><select id="ac-role"><option value="student">Student</option><option value="faculty">Faculty</option><option value="admin">Admin</option><option value="hod">HoD</option><option value="registrar">Registrar</option></select></div>
+        <div class="f"><label>User ID</label><input type="text" id="ac-uid" placeholder="e.g. S2021001 / F001 / A001"></div>
+        <div class="f"><label>Document Category</label><select id="ac-cat"><option value="all">All Documents</option><option>Certificates</option><option>Student Records</option><option>Forms</option><option>Transcripts</option></select></div>
+        <div class="f"><label>Permission Level</label><select id="ac-perm"><option value="view">View Only</option><option value="submit">Submit</option><option value="approve">Approve / Reject</option><option value="edit">Edit</option><option value="full">Full Access</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-ac">🔐 Process Access Request</button><div class="spin" id="sp-ac"></div></div>
+      <div class="rc"><div class="rh"><span>Access Control Response</span><div id="st-ac"></div></div><div class="rb" id="out-ac"></div></div>
+    </div>
+  </div>
+
+  <!-- 13. Notification System -->
+  <div class="dsp" id="dsub-notif">
+    <div class="card">
+      <div class="ct">🔔 Notification System</div>
+      <div class="cd">Send email and SMS notifications, deadline alerts, and status update messages to students and faculty.</div>
+      <div class="f fw"><label>Notification Type</label>
+        <select id="notif-type">
+          <option value="email">Email Notification</option>
+          <option value="sms">SMS Alert</option>
+          <option value="deadline">Deadline Alert</option>
+          <option value="status">Status Update</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Recipient</label><select id="notif-recv"><option value="student">Specific Student</option><option value="all-students">All Students</option><option value="faculty">Faculty</option><option value="department">Whole Department</option></select></div>
+        <div class="f"><label>Student ID / Group</label><input type="text" id="notif-sid" placeholder="e.g. S2021001 or Semester 5"></div>
+        <div class="f"><label>Subject / Title</label><input type="text" id="notif-subj" placeholder="e.g. Document Submission Deadline Reminder"></div>
+        <div class="f"><label>Deadline Date (if applicable)</label><input type="date" id="notif-date"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Message Content</label><textarea id="notif-msg" placeholder="Describe the notification message or leave blank for AI to draft it..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-notif">🔔 Send Notification</button><div class="spin" id="sp-notif"></div></div>
+      <div class="rc"><div class="rh"><span>Notification Preview</span><div id="st-notif"></div></div><div class="rb" id="out-notif"></div></div>
+    </div>
+  </div>
+
+  <!-- 14. Dashboard & Analytics -->
+  <div class="dsp" id="dsub-dashboard">
+    <div class="card">
+      <div class="ct">📊 Dashboard & Analytics</div>
+      <div class="cd">Overview of document requests, approval statistics, activity tracking, and analytical reports.</div>
+      <div class="fg c2">
+        <div class="f"><label>Report Type</label>
+          <select id="dash-type">
+            <option value="overview">Request Overview</option>
+            <option value="stats">Status Statistics</option>
+            <option value="activity">Activity Tracking</option>
+            <option value="report">Report Generation</option>
+          </select></div>
+        <div class="f"><label>Time Period</label>
+          <select id="dash-period"><option>This Week</option><option>This Month</option><option>This Semester</option><option>This Academic Year</option></select></div>
+        <div class="f"><label>Department / Programme</label><input type="text" id="dash-dept" placeholder="e.g. Computer Science, All"></div>
+        <div class="f"><label>Filter By</label><select id="dash-filter"><option value="all">All Documents</option><option value="pending">Pending Only</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-dash">📊 Generate Report</button><div class="spin" id="sp-dash"></div></div>
+      <div class="rc"><div class="rh"><span>Analytics Report</span><div id="st-dash"></div></div><div class="rb" id="out-dash"></div></div>
+    </div>
+  </div>
+
+  <!-- 15. Verification System -->
+  <div class="dsp" id="dsub-verify">
+    <div class="card">
+      <div class="ct">✅ Verification System</div>
+      <div class="cd">Verify document authenticity via QR code, confirm document validity, and support public verification requests.</div>
+      <div class="f fw"><label>Verification Type</label>
+        <select id="ver-type">
+          <option value="qr">QR Code Verification</option>
+          <option value="authenticity">Authenticity Check</option>
+          <option value="public">Public Verification</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Document ID / Reference</label><input type="text" id="ver-docid" placeholder="e.g. CERT-2024-00123"></div>
+        <div class="f"><label>Student ID</label><input type="text" id="ver-sid" placeholder="e.g. S2021001"></div>
+        <div class="f"><label>Document Type</label>
+          <select id="ver-doctype"><option>Academic Certificate</option><option>Bonafide</option><option>Transcript</option><option>NOC</option><option>Recommendation Letter</option></select></div>
+        <div class="f"><label>Issuing Year</label><select id="ver-year"><option>2025/2026</option><option>2024/2025</option><option>2023/2024</option><option>2022/2023</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>QR Code Data / Verification Code (if available)</label><input type="text" id="ver-code" placeholder="Paste QR code data or verification hash..."></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-ver">✅ Verify Document</button><div class="spin" id="sp-ver"></div></div>
+      <div class="rc"><div class="rh"><span>Verification Result</span><div id="st-ver"></div></div><div class="rb" id="out-ver"></div></div>
+    </div>
+  </div>
+
+  <!-- 16. File Upload -->
+  <div class="dsp" id="dsub-file-upload">
+    <div class="card">
+      <div class="ct">📁 File Upload System</div>
+      <div class="cd">Upload documents securely to the server. Supported: PDF, DOCX, TXT, XLSX, CSV, PNG, JPG.</div>
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📁</div>
+        <p class="upload-hint">Drag & drop files here, or click to browse</p>
+        <p class="upload-types">PDF · DOCX · TXT · XLSX · CSV · PNG · JPG</p>
+        <input type="file" id="upload-input" style="display:none" accept=".pdf,.docx,.doc,.txt,.xlsx,.csv,.png,.jpg,.jpeg">
+      </div>
+      <div class="fg c2" style="margin-top:14px">
+        <div class="f"><label>Document Category</label>
+          <select id="ul-cat"><option>Academic Certificate</option><option>Transcript</option><option>Form / Application</option><option>Student Record</option><option>Research / Project</option><option>Internship Document</option><option>Other</option></select></div>
+        <div class="f"><label>Student ID (optional)</label><input type="text" id="ul-sid" placeholder="e.g. S2021001"></div>
+      </div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-upload">📁 Upload File</button><div class="spin" id="sp-upload"></div></div>
+      <div id="upload-result" style="margin-top:14px"></div>
+      <div class="upload-list" id="upload-list"></div>
+    </div>
+  </div>
+
+  <!-- 17. PDF Analyser -->
+  <div class="dsp" id="dsub-pdf-analyse">
+    <div class="card">
+      <div class="ct">📄 PDF Analyser & AI Advisor</div>
+      <div class="cd">Upload any academic PDF — the AI reads it, summarizes the content, extracts key points, and gives academic advice.</div>
+      <div class="upload-zone" id="pdf-zone">
+        <div class="upload-icon">📄</div>
+        <p class="upload-hint">Drag & drop a PDF, or click to browse</p>
+        <p class="upload-types">PDF files only — max 20MB</p>
+        <input type="file" id="pdf-input" style="display:none" accept=".pdf">
+      </div>
+      <div id="pdf-file-info" style="display:none;margin-top:12px" class="ib">
+        <span class="ic">📄</span><span id="pdf-file-name">No file selected</span>
+      </div>
+      <div class="fg c2" style="margin-top:14px">
+        <div class="f"><label>Analysis Mode</label>
+          <select id="pdf-mode">
+            <option value="full">Full Analysis (Summary + Key Points + Advice)</option>
+            <option value="summarize">Summary Only</option>
+            <option value="keypoints">Key Points Only</option>
+            <option value="advice">Academic Advice Only</option>
+          </select></div>
+        <div class="f" style="align-items:flex-end">
+          <div id="pdf-stats" style="font-size:12px;color:var(--text3)"></div>
+        </div>
+      </div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-pdf">📄 Analyse PDF</button><div class="spin" id="sp-pdf"></div></div>
+      <div class="rc"><div class="rh"><span>AI Analysis Report</span><div id="st-pdf"></div></div><div class="rb" id="out-pdf"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ SCHEDULING ══════════ -->
+<div class="sw" id="view-schedule" style="display:none">
+  <div class="sh">
+    <div class="sh-l"><h2>📅 Scheduling & Notices</h2><p>AI-powered schedule management, notices, reminders, conflict detection, announcements, and smart notifications.</p></div>
+    <div class="spill">Scheduling</div>
+  </div>
+
+  <!-- Scheduling Sub-tabs -->
+  <div class="stabs" id="sched-stabs">
+    <button class="stab active" data-ssub="sch-mgmt">📅 Schedule Management</button>
+    <button class="stab" data-ssub="notices">📢 Notices & Announcements</button>
+    <button class="stab" data-ssub="reminders">🔔 Reminders & Alerts</button>
+    <button class="stab" data-ssub="dissem">📡 Information Dissemination</button>
+    <button class="stab" data-ssub="archive">🗃 Archive & Logs</button>
+    <button class="stab" data-ssub="ai-sched">🤖 AI Scheduling</button>
+    <button class="stab" data-ssub="ai-announce">✍ AI Announcements</button>
+    <button class="stab" data-ssub="ai-notif">🧠 AI Smart Notifications</button>
+  </div>
+
+  <!-- 1. Schedule Management -->
+  <div class="ssp active" id="ssub-sch-mgmt">
+    <div class="card">
+      <div class="ct">📅 Schedule Management</div>
+      <div class="cd">Create and manage class routines, exam timetables, lab bookings, and schedule changes.</div>
+      <div class="f fw"><label>Schedule Type</label>
+        <select id="sm-type">
+          <option value="class">Class Schedules & Routines</option>
+          <option value="exam">Examination Schedules</option>
+          <option value="lab">Lab & Resource Booking</option>
+          <option value="change">Schedule Changes</option>
+          <option value="reschedule">Rescheduling</option>
+        </select></div>
+
+      <div id="sm-class">
+        <div class="fg c3">
+          <div class="f"><label>Course Code</label><input type="text" id="sm-c-code" placeholder="e.g. CS301"></div>
+          <div class="f"><label>Course Name</label><input type="text" id="sm-c-name" placeholder="e.g. Data Structures"></div>
+          <div class="f"><label>Lecturer</label><input type="text" id="sm-c-lect" placeholder="e.g. Dr. Ahmad"></div>
+          <div class="f"><label>Day</label>
+            <select id="sm-c-day"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+          <div class="f"><label>Start Time</label>
+            <select id="sm-c-start"><option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select></div>
+          <div class="f"><label>Duration (hrs)</label><input type="number" id="sm-c-dur" min="1" max="4" value="2"></div>
+          <div class="f"><label>Venue / Room</label><input type="text" id="sm-c-room" placeholder="e.g. DK3, Lab A"></div>
+          <div class="f"><label>Programme / Group</label><input type="text" id="sm-c-group" placeholder="e.g. CS Yr2 Sec A"></div>
+          <div class="f"><label>Semester</label><select id="sm-c-sem"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select></div>
+        </div>
+      </div>
+
+      <div id="sm-exam" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Course Code</label><input type="text" id="sm-e-code" placeholder="e.g. CS301"></div>
+          <div class="f"><label>Exam Type</label><select id="sm-e-etype"><option>Mid-Semester</option><option>Final Exam</option><option>Quiz</option><option>Practical Exam</option></select></div>
+          <div class="f"><label>Exam Date</label><input type="date" id="sm-e-date"></div>
+          <div class="f"><label>Start Time</label><select id="sm-e-time"><option>08:00</option><option>09:00</option><option>14:00</option><option>15:00</option></select></div>
+          <div class="f"><label>Exam Hall</label><input type="text" id="sm-e-hall" placeholder="e.g. DK Main Hall, Block A"></div>
+          <div class="f"><label>Duration (hrs)</label><input type="number" id="sm-e-dur" min="1" max="4" value="2"></div>
+        </div>
+      </div>
+
+      <div id="sm-lab" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Lab / Resource Name</label><input type="text" id="sm-l-name" placeholder="e.g. Computer Lab 2, Projector A"></div>
+          <div class="f"><label>Booking Date</label><input type="date" id="sm-l-date"></div>
+          <div class="f"><label>Start Time</label><select id="sm-l-start"><option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option><option>14:00</option><option>15:00</option></select></div>
+          <div class="f"><label>Duration (hrs)</label><input type="number" id="sm-l-dur" min="1" max="6" value="2"></div>
+          <div class="f"><label>Purpose</label><input type="text" id="sm-l-purpose" placeholder="e.g. Lab class, Workshop, Exam"></div>
+          <div class="f"><label>Requested By</label><input type="text" id="sm-l-by" placeholder="e.g. Dr. Rahman / CS Dept"></div>
+        </div>
+      </div>
+
+      <div id="sm-change" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Original Course / Event</label><input type="text" id="sm-ch-orig" placeholder="e.g. CS301 – Monday 09:00"></div>
+          <div class="f"><label>Reason for Change</label><select id="sm-ch-reason"><option>Lecturer unavailable</option><option>Venue unavailable</option><option>Public holiday</option><option>Event conflict</option><option>Emergency</option></select></div>
+          <div class="f"><label>New Proposed Day</label><select id="sm-ch-day"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+          <div class="f"><label>New Proposed Time</label><select id="sm-ch-time"><option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Additional Notes</label><textarea id="sm-ch-notes" placeholder="Any extra information about this change..."></textarea></div>
+      </div>
+
+      <div id="sm-reschedule" style="display:none">
+        <div class="fg c2">
+          <div class="f"><label>Affected Course / Exam</label><input type="text" id="sm-rs-course" placeholder="e.g. CS301 Final Exam"></div>
+          <div class="f"><label>Original Date/Time</label><input type="text" id="sm-rs-orig" placeholder="e.g. 2025-12-10 09:00"></div>
+          <div class="f"><label>Conflict Type</label><select id="sm-rs-conflict"><option>Lecturer clash</option><option>Room double-booking</option><option>Student group overlap</option><option>Holiday overlap</option></select></div>
+          <div class="f"><label>Number of Students Affected</label><input type="number" id="sm-rs-students" min="1" value="45"></div>
+        </div>
+        <div class="f" style="margin-top:12px"><label>Describe the Conflict</label><textarea id="sm-rs-desc" placeholder="Explain the scheduling conflict in detail..."></textarea></div>
+      </div>
+
+      <div class="br" style="margin-top:16px"><button class="btn bp" id="btn-sm">📅 Process Schedule</button><div class="spin" id="sp-sm"></div></div>
+      <div class="rc"><div class="rh"><span>Schedule Response</span><div id="st-sm"></div></div><div class="rb" id="out-sm"></div></div>
+    </div>
+  </div>
+
+  <!-- 2. Notices & Announcements -->
+  <div class="ssp" id="ssub-notices">
+    <div class="card">
+      <div class="ct">📢 Notice & Announcement System</div>
+      <div class="cd">Publish academic notices, general announcements, urgent alerts, and categorized notifications.</div>
+      <div class="f fw"><label>Notice Type</label>
+        <select id="nc-type">
+          <option value="academic">Academic Notice</option>
+          <option value="general">General Announcement</option>
+          <option value="urgent">Urgent Alert</option>
+          <option value="categorized">Categorized Notice</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Title / Subject</label><input type="text" id="nc-title" placeholder="e.g. Mid-Semester Exam Schedule Published"></div>
+        <div class="f"><label>Target Audience</label><select id="nc-audience"><option value="all-students">All Students</option><option value="semester">Specific Semester</option><option value="programme">Specific Programme</option><option value="faculty">Faculty Only</option><option value="everyone">Everyone</option></select></div>
+        <div class="f"><label>Priority Level</label><select id="nc-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+        <div class="f"><label>Publish Date</label><input type="date" id="nc-date"></div>
+        <div class="f"><label>Expiry Date</label><input type="date" id="nc-expiry"></div>
+        <div class="f"><label>Category</label><select id="nc-cat"><option>Academic</option><option>Administrative</option><option>Events</option><option>Examination</option><option>Registration</option><option>Financial</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Notice Content (leave blank for AI to generate)</label><textarea id="nc-content" placeholder="Enter notice body or leave blank for AI auto-generation..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-nc">📢 Publish Notice</button><div class="spin" id="sp-nc"></div></div>
+      <div class="rc"><div class="rh"><span>Notice Preview</span><div id="st-nc"></div></div><div class="rb" id="out-nc"></div></div>
+    </div>
+  </div>
+
+  <!-- 3. Reminders & Alerts -->
+  <div class="ssp" id="ssub-reminders">
+    <div class="card">
+      <div class="ct">🔔 Reminder & Notification System</div>
+      <div class="cd">Set up and send timely reminders for registration deadlines, exams, submissions, and events.</div>
+      <div class="f fw"><label>Reminder Type</label>
+        <select id="rem-type">
+          <option value="registration">Registration Deadlines</option>
+          <option value="exam">Exam Dates</option>
+          <option value="submission">Submission Deadlines</option>
+          <option value="event">Event Reminders</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Title</label><input type="text" id="rem-title" placeholder="e.g. Course Registration Closing Soon"></div>
+        <div class="f"><label>Deadline / Event Date</label><input type="date" id="rem-date"></div>
+        <div class="f"><label>Days Before to Remind</label><input type="number" id="rem-days" min="1" max="30" value="7"></div>
+        <div class="f"><label>Target Group</label><input type="text" id="rem-group" placeholder="e.g. All Semester 5 students, CS Year 2"></div>
+        <div class="f"><label>Reminder Channel</label><select id="rem-channel"><option>App Notification</option><option>Email</option><option>SMS</option><option>All Channels</option></select></div>
+        <div class="f"><label>Frequency</label><select id="rem-freq"><option value="once">Once only</option><option value="daily">Daily until deadline</option><option value="3-days">Every 3 days</option><option value="weekly">Weekly</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Additional Message</label><textarea id="rem-msg" placeholder="Extra details for the reminder..."></textarea></div>
+      <div class="br" style="margin-top:14px">
+        <button class="btn bp" id="btn-rem">🔔 Set Reminder</button><div class="spin" id="sp-rem"></div>
+      </div>
+      <div class="rc"><div class="rh"><span>Reminder Confirmation</span><div id="st-rem"></div></div><div class="rb" id="out-rem"></div></div>
+    </div>
+  </div>
+
+  <!-- 4. Information Dissemination -->
+  <div class="ssp" id="ssub-dissem">
+    <div class="card">
+      <div class="ct">📡 Information Dissemination</div>
+      <div class="cd">Deliver updates via multiple channels — targeted to groups, real-time or broadcast to all users.</div>
+      <div class="f fw"><label>Delivery Mode</label>
+        <select id="dis-mode">
+          <option value="multi-channel">Multi-channel Delivery</option>
+          <option value="targeted">Targeted Notifications</option>
+          <option value="realtime">Real-time Update</option>
+          <option value="broadcast">Broadcast Message</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Message Title</label><input type="text" id="dis-title" placeholder="e.g. Campus WiFi Maintenance Notice"></div>
+        <div class="f"><label>Channels</label><select id="dis-channel"><option>App + Email</option><option>App + SMS</option><option>Email + SMS</option><option>All (App + Email + SMS)</option><option>App Only</option></select></div>
+        <div class="f"><label>Target Segment</label><select id="dis-seg"><option value="all">All Users</option><option value="students">Students Only</option><option value="faculty">Faculty Only</option><option value="semester">By Semester</option><option value="programme">By Programme</option></select></div>
+        <div class="f"><label>Segment Detail</label><input type="text" id="dis-seg-detail" placeholder="e.g. Semester 3, BSc CS, Block A"></div>
+        <div class="f"><label>Delivery Time</label><select id="dis-time"><option value="now">Send Immediately</option><option value="scheduled">Scheduled</option><option value="optimal">AI-Optimized Time</option></select></div>
+        <div class="f"><label>Scheduled Date/Time</label><input type="datetime-local" id="dis-datetime"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Message Body</label><textarea id="dis-body" placeholder="Enter the message or leave blank for AI to generate..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-dis">📡 Send Message</button><div class="spin" id="sp-dis"></div></div>
+      <div class="rc"><div class="rh"><span>Dissemination Report</span><div id="st-dis"></div></div><div class="rb" id="out-dis"></div></div>
+    </div>
+  </div>
+
+  <!-- 5. Archive & Logs -->
+  <div class="ssp" id="ssub-archive">
+    <div class="card">
+      <div class="ct">🗃 Archive & Logs Management</div>
+      <div class="cd">Access past notices, communication history, search archived records, and download logs.</div>
+      <div class="f fw"><label>Archive Action</label>
+        <select id="arc-action">
+          <option value="notices">Notice Archive</option>
+          <option value="logs">Communication Logs</option>
+          <option value="search">Search Notices</option>
+          <option value="download">Download Records</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Search Keyword</label><input type="text" id="arc-keyword" placeholder="e.g. exam schedule, deadline, registration"></div>
+        <div class="f"><label>Date Range From</label><input type="date" id="arc-from"></div>
+        <div class="f"><label>Date Range To</label><input type="date" id="arc-to"></div>
+        <div class="f"><label>Notice Category</label><select id="arc-cat"><option value="all">All Categories</option><option>Academic</option><option>Examination</option><option>Administrative</option><option>Events</option><option>Urgent</option></select></div>
+        <div class="f"><label>Recipient Group</label><select id="arc-group"><option value="all">All</option><option value="students">Students</option><option value="faculty">Faculty</option><option value="staff">Admin Staff</option></select></div>
+        <div class="f"><label>Format</label><select id="arc-format"><option>View Summary</option><option>Full Content</option><option>Export CSV</option><option>Export PDF</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-arc">🗃 Retrieve Archives</button><div class="spin" id="sp-arc"></div></div>
+      <div class="rc"><div class="rh"><span>Archive Results</span><div id="st-arc"></div></div><div class="rb" id="out-arc"></div></div>
+    </div>
+  </div>
+
+  <!-- 6. AI Scheduling -->
+  <div class="ssp" id="ssub-ai-sched">
+    <div class="card">
+      <div class="ct">🤖 AI Scheduling System</div>
+      <div class="cd">Use AI to auto-generate schedules, detect conflicts, suggest resolutions, and optimize room and lab resources.</div>
+      <div class="f fw"><label>AI Function</label>
+        <select id="ais-func">
+          <option value="auto-gen">Auto Schedule Generation</option>
+          <option value="conflict-detect">Conflict Detection</option>
+          <option value="conflict-resolve">Conflict Resolution</option>
+          <option value="resource-opt">Resource Optimization</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Semester</label><select id="ais-sem"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select></div>
+        <div class="f"><label>Number of Courses</label><input type="number" id="ais-courses" min="1" max="30" value="12"></div>
+        <div class="f"><label>Number of Lecturers</label><input type="number" id="ais-lects" min="1" max="50" value="8"></div>
+        <div class="f"><label>Available Rooms</label><input type="number" id="ais-rooms" min="1" max="20" value="5"></div>
+        <div class="f"><label>Teaching Days</label><select id="ais-days"><option value="5">Mon – Fri (5 days)</option><option value="4">Mon – Thu (4 days)</option><option value="6">Mon – Sat (6 days)</option></select></div>
+        <div class="f"><label>Teaching Hours / Day</label><select id="ais-hrs"><option value="6">6 hours</option><option value="8">8 hours</option><option value="10">10 hours</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Constraints / Special Requirements</label><textarea id="ais-constraints" placeholder="e.g. Dr. Ahmad unavailable Monday mornings, Lab A reserved Fridays, no back-to-back exams for same group..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-ais-sch">🤖 Run AI Scheduler</button><div class="spin" id="sp-ais-sch"></div></div>
+      <div class="rc"><div class="rh"><span>AI Schedule Output</span><div id="st-ais-sch"></div></div><div class="rb" id="out-ais-sch"></div></div>
+    </div>
+  </div>
+
+  <!-- 7. AI Announcement Generation -->
+  <div class="ssp" id="ssub-ai-announce">
+    <div class="card">
+      <div class="ct">✍ AI Announcement Generation</div>
+      <div class="cd">Automatically write academic notices, use smart templates, optimize language, and generate multi-language versions.</div>
+      <div class="f fw"><label>Generation Mode</label>
+        <select id="aag-mode">
+          <option value="auto-write">Auto Notice Writing</option>
+          <option value="template">Template-based Notice</option>
+          <option value="language-opt">Language Optimization</option>
+          <option value="multi-lang">Multi-language Support</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Notice Topic</label><input type="text" id="aag-topic" placeholder="e.g. Final exam schedule for Semester 5"></div>
+        <div class="f"><label>Target Audience</label><select id="aag-audience"><option>All Students</option><option>Semester 5 Students</option><option>Final Year Students</option><option>Faculty</option><option>All</option></select></div>
+        <div class="f"><label>Tone</label><select id="aag-tone"><option value="formal">Formal / Official</option><option value="friendly">Friendly but Professional</option><option value="urgent">Urgent / Alert</option></select></div>
+        <div class="f"><label>Language</label><select id="aag-lang"><option value="english">English</option><option value="malay">Bahasa Melayu</option><option value="both">Both (Bilingual)</option><option value="arabic">Arabic</option></select></div>
+        <div class="f"><label>Key Details</label><input type="text" id="aag-details" placeholder="e.g. Exam starts 15 Jan, DK Hall, 2hrs duration"></div>
+        <div class="f"><label>Template Style</label><select id="aag-template"><option value="standard">Standard University Notice</option><option value="alert">Alert / Warning Box</option><option value="info">Information Card</option><option value="reminder">Reminder Format</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Raw Draft (optional — AI will improve it)</label><textarea id="aag-draft" placeholder="Paste a rough draft here and AI will optimize it, or leave blank for full AI generation..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-aag">✍ Generate Announcement</button><div class="spin" id="sp-aag"></div></div>
+      <div class="rc"><div class="rh"><span>Generated Announcement</span><div id="st-aag"></div></div><div class="rb" id="out-aag"></div></div>
+    </div>
+  </div>
+
+  <!-- 8. AI Smart Notifications -->
+  <div class="ssp" id="ssub-ai-notif">
+    <div class="card">
+      <div class="ct">🧠 AI Smart Notifications</div>
+      <div class="cd">Intelligently timed reminders, personalized alerts, priority-based notifications, and predictive alerts based on user behaviour.</div>
+      <div class="f fw"><label>Smart Notification Mode</label>
+        <select id="asn-mode">
+          <option value="smart-timing">Smart Reminder Timing</option>
+          <option value="personalized">Personalized Alerts</option>
+          <option value="priority">Priority-based Notification</option>
+          <option value="predictive">Predictive Alerts</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Student ID / Group</label><input type="text" id="asn-target" placeholder="e.g. S2021001 or Semester 5 CS"></div>
+        <div class="f"><label>Notification Topic</label><input type="text" id="asn-topic" placeholder="e.g. Assignment submission, exam preparation"></div>
+        <div class="f"><label>Student GPA (for personalization)</label><input type="number" id="asn-gpa" min="0" max="4" step="0.01" value="3.0"></div>
+        <div class="f"><label>Upcoming Deadline</label><input type="date" id="asn-deadline"></div>
+        <div class="f"><label>Past Behaviour Pattern</label><select id="asn-pattern"><option value="on-time">Usually submits on time</option><option value="late">Often submits late</option><option value="at-risk">At academic risk</option><option value="unknown">Unknown / New student</option></select></div>
+        <div class="f"><label>Priority Level</label><select id="asn-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-asn">🧠 Generate Smart Notification</button><div class="spin" id="sp-asn"></div></div>
+      <div class="rc"><div class="rh"><span>Smart Notification Plan</span><div id="st-asn"></div></div><div class="rb" id="out-asn"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ COMMUNICATION ══════════ -->
+<div class="sw" id="view-comm" style="display:none">
+  <div class="sh">
+    <div class="sh-l"><h2>💬 Internal Communication</h2><p>AI-powered coordination, notices, meeting management, task tracking, records, external coordination, and smart messaging.</p></div>
+    <div class="spill">Communication</div>
+  </div>
+
+  <!-- Communication Sub-tabs -->
+  <div class="stabs" id="comm-stabs">
+    <button class="stab active" data-csub="coord">🤝 Coordination</button>
+    <button class="stab" data-csub="notice-memo">📋 Notices & Memos</button>
+    <button class="stab" data-csub="meetings">📅 Meeting Management</button>
+    <button class="stab" data-csub="tasks">✅ Task & Follow-up</button>
+    <button class="stab" data-csub="records">🗂 Communication Records</button>
+    <button class="stab" data-csub="external">🌐 External Coordination</button>
+    <button class="stab" data-csub="ai-smart">🤖 AI Smart Communication</button>
+    <button class="stab" data-csub="ai-meeting">🧠 AI Meeting Automation</button>
+    <button class="stab" data-csub="ai-routing">📡 AI Routing & Priority</button>
+    <button class="stab" data-csub="email-sender">📧 Email Sender</button>
+  </div>
+
+  <!-- 1. Communication Coordination -->
+  <div class="csp active" id="csub-coord">
+    <div class="card">
+      <div class="ct">🤝 Communication Coordination</div>
+      <div class="cd">Manage and facilitate communication between faculty, administrative staff, students, and cross-department teams.</div>
+      <div class="f fw"><label>Communication Type</label>
+        <select id="coord-type">
+          <option value="faculty">Faculty Members</option>
+          <option value="admin">Administrative Staff</option>
+          <option value="students">Students</option>
+          <option value="cross-dept">Cross-Department Communication</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>From (Sender)</label><input type="text" id="coord-from" placeholder="e.g. Dr. Ahmad / Admin Office / HOD"></div>
+        <div class="f"><label>To (Recipient)</label><input type="text" id="coord-to" placeholder="e.g. All CS Faculty / Semester 3 Students"></div>
+        <div class="f"><label>Department</label><input type="text" id="coord-dept" placeholder="e.g. Computer Science, Registrar's Office"></div>
+        <div class="f"><label>Urgency</label>
+          <select id="coord-urg"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+        <div class="f"><label>Communication Mode</label>
+          <select id="coord-mode"><option>Direct Message</option><option>Group Broadcast</option><option>Department Circular</option><option>Official Memo</option></select></div>
+        <div class="f"><label>Subject</label><input type="text" id="coord-subj" placeholder="e.g. Semester 6 Timetable Update"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Message / Purpose</label><textarea id="coord-msg" placeholder="Describe the message content or leave blank for AI to draft..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-coord">🤝 Send / Draft Communication</button><div class="spin" id="sp-coord"></div></div>
+      <div class="rc"><div class="rh"><span>Communication Draft</span><div id="st-coord"></div></div><div class="rb" id="out-coord"></div></div>
+    </div>
+  </div>
+
+  <!-- 2. Notice & Memo Circulation -->
+  <div class="csp" id="csub-notice-memo">
+    <div class="card">
+      <div class="ct">📋 Notice & Memo Circulation</div>
+      <div class="cd">Draft and distribute internal notices, formal memos, operational instructions, and priority messages.</div>
+      <div class="f fw"><label>Document Type</label>
+        <select id="nm-type">
+          <option value="notice">Internal Notice</option>
+          <option value="memo">Memo</option>
+          <option value="instruction">Instructions / Guidelines</option>
+          <option value="priority">Priority Message</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Reference Number</label><input type="text" id="nm-ref" placeholder="e.g. MEMO/CS/2025/012"></div>
+        <div class="f"><label>Addressed To</label>
+          <select id="nm-to"><option>All Staff</option><option>All Faculty</option><option>All Students</option><option>HOD / Coordinator</option><option>Specific Department</option></select></div>
+        <div class="f"><label>From / Issuing Authority</label><input type="text" id="nm-from" placeholder="e.g. Dean of Faculty / Admin Department"></div>
+        <div class="f"><label>Date</label><input type="date" id="nm-date"></div>
+        <div class="f"><label>Subject</label><input type="text" id="nm-subj" placeholder="e.g. New Leave Policy Effective January 2026"></div>
+        <div class="f"><label>Priority</label>
+          <select id="nm-priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent / Immediate</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Content (leave blank for full AI generation)</label><textarea id="nm-content" placeholder="Key points or full content of the notice/memo..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-nm">📋 Generate & Circulate</button><div class="spin" id="sp-nm"></div></div>
+      <div class="rc"><div class="rh"><span>Notice / Memo Output</span><div id="st-nm"></div></div><div class="rb" id="out-nm"></div></div>
+    </div>
+  </div>
+
+  <!-- 3. Meeting Management -->
+  <div class="csp" id="csub-meetings">
+    <div class="card">
+      <div class="ct">📅 Meeting Management</div>
+      <div class="cd">Schedule meetings, prepare agendas, manage participants, and store meeting records and minutes.</div>
+      <div class="f fw"><label>Action</label>
+        <select id="mtg-action">
+          <option value="schedule">Meeting Scheduling</option>
+          <option value="agenda">Agenda Preparation</option>
+          <option value="participants">Participant Management</option>
+          <option value="records">Meeting Records / Minutes</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Meeting Title</label><input type="text" id="mtg-title" placeholder="e.g. Semester 6 Academic Planning Meeting"></div>
+        <div class="f"><label>Meeting Type</label>
+          <select id="mtg-type"><option>Departmental Meeting</option><option>Faculty Meeting</option><option>HOD Meeting</option><option>Student-Faculty Meeting</option><option>Emergency Meeting</option></select></div>
+        <div class="f"><label>Date</label><input type="date" id="mtg-date"></div>
+        <div class="f"><label>Time</label>
+          <select id="mtg-time"><option>09:00</option><option>10:00</option><option>11:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select></div>
+        <div class="f"><label>Venue / Platform</label><input type="text" id="mtg-venue" placeholder="e.g. Meeting Room 1 / MS Teams"></div>
+        <div class="f"><label>Duration (hrs)</label><input type="number" id="mtg-dur" min="0.5" max="4" step="0.5" value="1"></div>
+        <div class="f"><label>Organiser</label><input type="text" id="mtg-org" placeholder="e.g. Dr. Ahmad / Admin Office"></div>
+        <div class="f"><label>No. of Participants</label><input type="number" id="mtg-pax" min="2" max="100" value="10"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Agenda Items / Discussion Points</label><textarea id="mtg-agenda" placeholder="List the agenda items or key points to be discussed..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-mtg">📅 Process Meeting</button><div class="spin" id="sp-mtg"></div></div>
+      <div class="rc"><div class="rh"><span>Meeting Output</span><div id="st-mtg"></div></div><div class="rb" id="out-mtg"></div></div>
+    </div>
+  </div>
+
+  <!-- 4. Task & Follow-up Tracking -->
+  <div class="csp" id="csub-tasks">
+    <div class="card">
+      <div class="ct">✅ Task & Follow-up Tracking</div>
+      <div class="cd">Assign action items from meetings, monitor progress, send follow-ups, and manage task deadlines.</div>
+      <div class="f fw"><label>Action</label>
+        <select id="task-action">
+          <option value="assign">Assign Action Items</option>
+          <option value="progress">Progress Tracking</option>
+          <option value="followup">Follow-up</option>
+          <option value="deadline">Deadline Management</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Task Title</label><input type="text" id="task-title" placeholder="e.g. Submit updated course outline"></div>
+        <div class="f"><label>Assigned To</label><input type="text" id="task-assignee" placeholder="e.g. Dr. Lim, All Coordinators"></div>
+        <div class="f"><label>Assigned By</label><input type="text" id="task-by" placeholder="e.g. HOD / Dean"></div>
+        <div class="f"><label>Due Date</label><input type="date" id="task-due"></div>
+        <div class="f"><label>Priority</label>
+          <select id="task-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div>
+        <div class="f"><label>Current Status</label>
+          <select id="task-status"><option value="not-started">Not Started</option><option value="in-progress">In Progress</option><option value="completed">Completed</option><option value="overdue">Overdue</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Task Description / Notes</label><textarea id="task-notes" placeholder="Describe the task, context, and any blockers..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-task">✅ Process Task</button><div class="spin" id="sp-task"></div></div>
+      <div class="rc"><div class="rh"><span>Task Response</span><div id="st-task"></div></div><div class="rb" id="out-task"></div></div>
+    </div>
+  </div>
+
+  <!-- 5. Communication Records -->
+  <div class="csp" id="csub-records">
+    <div class="card">
+      <div class="ct">🗂 Communication Records</div>
+      <div class="cd">Access message logs, documented conversations, search past communications, and archive records.</div>
+      <div class="f fw"><label>Record Action</label>
+        <select id="rec-action">
+          <option value="logs">Message Logs</option>
+          <option value="conversations">Documented Conversations</option>
+          <option value="search">Search Records</option>
+          <option value="archive">Archive Communications</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Search Keyword</label><input type="text" id="rec-keyword" placeholder="e.g. exam schedule, leave approval, policy update"></div>
+        <div class="f"><label>Sender / Recipient</label><input type="text" id="rec-person" placeholder="e.g. Dr. Ahmad, Admin Office, S2021001"></div>
+        <div class="f"><label>Date From</label><input type="date" id="rec-from"></div>
+        <div class="f"><label>Date To</label><input type="date" id="rec-to"></div>
+        <div class="f"><label>Communication Type</label>
+          <select id="rec-type"><option value="all">All Types</option><option>Notice</option><option>Memo</option><option>Email</option><option>Meeting Minutes</option><option>Circular</option></select></div>
+        <div class="f"><label>Department</label><input type="text" id="rec-dept" placeholder="e.g. Computer Science, Registrar"></div>
+      </div>
+      <div class="br"><button class="btn bp" id="btn-rec">🗂 Retrieve Records</button><div class="spin" id="sp-rec"></div></div>
+      <div class="rc"><div class="rh"><span>Records Response</span><div id="st-rec"></div></div><div class="rb" id="out-rec"></div></div>
+    </div>
+  </div>
+
+  <!-- 6. External Coordination -->
+  <div class="csp" id="csub-external">
+    <div class="card">
+      <div class="ct">🌐 External Coordination</div>
+      <div class="cd">Coordinate with the Registrar's Office, other departments, approval workflows, and cross-unit data exchange.</div>
+      <div class="f fw"><label>Coordination Type</label>
+        <select id="ext-type">
+          <option value="registrar">Registrar's Office</option>
+          <option value="department">Other Department</option>
+          <option value="approval">Approval Request</option>
+          <option value="info-exchange">Information Exchange</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Requesting Unit</label><input type="text" id="ext-from" placeholder="e.g. CS Department / Academic Office"></div>
+        <div class="f"><label>Receiving Unit</label><input type="text" id="ext-to" placeholder="e.g. Registrar, Finance, IT Department"></div>
+        <div class="f"><label>Subject / Purpose</label><input type="text" id="ext-subj" placeholder="e.g. Request for student enrollment data"></div>
+        <div class="f"><label>Urgency</label>
+          <select id="ext-urg"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></div>
+        <div class="f"><label>Reference / Case No.</label><input type="text" id="ext-ref" placeholder="e.g. CASE-2025-0034"></div>
+        <div class="f"><label>Expected Response By</label><input type="date" id="ext-by"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Details / Data to Share</label><textarea id="ext-detail" placeholder="Describe the request, data to exchange, or approval needed..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-ext">🌐 Send Coordination Request</button><div class="spin" id="sp-ext"></div></div>
+      <div class="rc"><div class="rh"><span>Coordination Output</span><div id="st-ext"></div></div><div class="rb" id="out-ext"></div></div>
+    </div>
+  </div>
+
+  <!-- 7. AI Smart Communication -->
+  <div class="csp" id="csub-ai-smart">
+    <div class="card">
+      <div class="ct">🤖 AI Smart Communication</div>
+      <div class="cd">Centralized intelligent messaging — automated replies, message summarization, and sentiment detection.</div>
+      <div class="f fw"><label>AI Feature</label>
+        <select id="aic-feature">
+          <option value="platform">Smart Messaging Platform</option>
+          <option value="auto-reply">Automated Replies</option>
+          <option value="summarize">Message Summarization</option>
+          <option value="sentiment">Sentiment Detection</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Sender Role</label>
+          <select id="aic-role"><option value="student">Student</option><option value="faculty">Faculty</option><option value="admin">Admin</option><option value="hod">HOD</option></select></div>
+        <div class="f"><label>Recipient</label><input type="text" id="aic-to" placeholder="e.g. Academic Advisor, CS Department"></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Message / Conversation to Analyse</label><textarea id="aic-msg" style="min-height:100px" placeholder="Paste the message, conversation, or email thread here for AI to process..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-aic">🤖 Run AI Communication</button><div class="spin" id="sp-aic"></div></div>
+      <div class="rc"><div class="rh"><span>AI Communication Output</span><div id="st-aic"></div></div><div class="rb" id="out-aic"></div></div>
+    </div>
+  </div>
+
+  <!-- 8. AI Meeting Automation -->
+  <div class="csp" id="csub-ai-meeting">
+    <div class="card">
+      <div class="ct">🧠 AI Meeting Automation</div>
+      <div class="cd">Auto-schedule meetings, generate agendas and minutes using AI, and track post-meeting follow-ups automatically.</div>
+      <div class="f fw"><label>Automation Mode</label>
+        <select id="aim-mode">
+          <option value="auto-schedule">Auto Scheduling</option>
+          <option value="agenda-gen">Agenda Generation</option>
+          <option value="minutes-gen">Minutes Generation</option>
+          <option value="followup-track">Follow-up Tracking</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Meeting Topic</label><input type="text" id="aim-topic" placeholder="e.g. End-of-semester review, Curriculum update"></div>
+        <div class="f"><label>Department / Team</label><input type="text" id="aim-dept" placeholder="e.g. CS Department Faculty"></div>
+        <div class="f"><label>Number of Participants</label><input type="number" id="aim-pax" min="2" max="50" value="8"></div>
+        <div class="f"><label>Duration (hrs)</label><input type="number" id="aim-dur" min="0.5" max="4" step="0.5" value="1.5"></div>
+        <div class="f"><label>Preferred Time</label>
+          <select id="aim-time"><option>Morning (09:00–12:00)</option><option>Afternoon (14:00–17:00)</option><option>Flexible</option></select></div>
+        <div class="f"><label>Meeting Format</label>
+          <select id="aim-format"><option value="physical">Physical / In-person</option><option value="online">Online / Virtual</option><option value="hybrid">Hybrid</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Key Discussion Points / Raw Notes</label><textarea id="aim-notes" placeholder="List topics for agenda generation, or paste raw meeting notes for minutes generation..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-aim">🧠 Run Meeting AI</button><div class="spin" id="sp-aim"></div></div>
+      <div class="rc"><div class="rh"><span>Meeting AI Output</span><div id="st-aim"></div></div><div class="rb" id="out-aim"></div></div>
+    </div>
+  </div>
+
+  <!-- 9. AI Message Routing & Prioritization -->
+  <div class="csp" id="csub-ai-routing">
+    <div class="card">
+      <div class="ct">📡 AI Message Routing & Prioritization</div>
+      <div class="cd">Intelligently route messages to the right person, detect urgency, optimize notifications, and automate communication workflows.</div>
+      <div class="f fw"><label>Routing Mode</label>
+        <select id="air-mode">
+          <option value="routing">Intelligent Routing</option>
+          <option value="priority">Priority Detection</option>
+          <option value="optimize">Notification Optimization</option>
+          <option value="workflow">Workflow Automation</option>
+        </select></div>
+      <div class="fg c2">
+        <div class="f"><label>Message Subject</label><input type="text" id="air-subj" placeholder="e.g. URGENT: Lab booking conflict for tomorrow"></div>
+        <div class="f"><label>Sender Role</label>
+          <select id="air-sender"><option value="student">Student</option><option value="faculty">Faculty</option><option value="admin">Admin</option><option value="system">System / Auto</option></select></div>
+        <div class="f"><label>Intended Audience</label><input type="text" id="air-audience" placeholder="e.g. IT Department, Academic Office, HOD"></div>
+        <div class="f"><label>Detected Urgency (manual override)</label>
+          <select id="air-urg"><option value="auto">Let AI Decide</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div>
+      </div>
+      <div class="f" style="margin-top:12px"><label>Message Content to Route / Analyse</label><textarea id="air-msg" style="min-height:90px" placeholder="Paste the full message. AI will detect priority, find the right recipient, and suggest routing path..."></textarea></div>
+      <div class="br" style="margin-top:14px"><button class="btn bp" id="btn-air">📡 Run AI Routing</button><div class="spin" id="sp-air"></div></div>
+      <div class="rc"><div class="rh"><span>Routing & Priority Report</span><div id="st-air"></div></div><div class="rb" id="out-air"></div></div>
+    </div>
+  </div>
+
+  <!-- 10. Real Email Sender -->
+  <div class="csp" id="csub-email-sender">
+    <div class="card">
+      <div class="ct">📧 AI Email Sender</div>
+      <div class="cd">Tell the AI what you want to say in plain language. It writes a professional formal email and sends it directly.</div>
+      <div class="ib">
+        <span class="ic">💡</span>
+        <span>Just give a simple instruction like "Tell Prof Ahmad the lab session Monday 9am is cancelled due to maintenance" — AI composes the full formal email and sends it.</span>
+      </div>
+      <div class="fg c2">
+        <div class="f"><label>To (Recipient Email)</label><input type="email" id="email-to" placeholder="e.g. ahmad@university.edu"></div>
+        <div class="f"><label>Your Role</label>
+          <select id="email-role"><option value="admin">Admin / Staff</option><option value="coordinator">Programme Coordinator</option><option value="hod">Head of Department</option><option value="faculty">Faculty Member</option></select></div>
+      </div>
+      <div class="f fw"><label>Your Instruction (plain language — AI writes the email)</label>
+        <textarea id="email-instruction" style="min-height:90px" placeholder="e.g. Inform Dr. Lim that the academic committee meeting is rescheduled from Thursday to Friday at 3pm in Meeting Room 2..."></textarea></div>
+      <div class="f fw"><label>Additional Context (optional)</label>
+        <input type="text" id="email-context" placeholder="e.g. Urgent — exam clashes have been detected, deadline is tomorrow"></div>
+      <div class="br">
+        <button class="btn bp" id="btn-email">📧 Compose & Send Email</button>
+        <div class="spin" id="sp-email"></div>
+        <span id="email-sent-badge" style="display:none;padding:5px 12px;border-radius:999px;background:var(--gsoft);border:1px solid rgba(34,197,94,.3);font-size:11px;font-weight:700;color:#86efac">✓ Sent</span>
+      </div>
+      <div class="rc"><div class="rh"><span>Email Preview / Status</span><div id="st-email"></div></div><div class="rb" id="out-email"></div></div>
+    </div>
+  </div>
+
+</div>
+
+
+</main>
+</div><!-- end app -->
+
+<script>
+// ── Navigation ──────────────────────────────────────────
+document.querySelectorAll('.ni').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ni').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const v = btn.dataset.view;
+    ['advising','docs','schedule','comm'].forEach(id => {
+      document.getElementById('view-'+id).style.display = id === v ? '' : 'none';
+    });
+  });
+});
+
+// ── Sub-tabs ────────────────────────────────────────────
+document.querySelectorAll('.stab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const id = 'sub-' + tab.dataset.sub;
+    document.querySelectorAll('.sp').forEach(p => p.classList.toggle('active', p.id === id));
+  });
+});
+
+// ── Switchers ────────────────────────────────────────────
+function switcher(selId, map) {
+  document.getElementById(selId).addEventListener('change', function() {
+    Object.entries(map).forEach(([v, el]) => {
+      document.getElementById(el).style.display = this.value === v ? '' : 'none';
+    });
+  });
+}
+// ── Communication Sub-tabs ──────────────────────────────
+document.querySelectorAll('#comm-stabs .stab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#comm-stabs .stab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const id = 'csub-' + tab.dataset.csub;
+    document.querySelectorAll('.csp').forEach(p => p.classList.toggle('active', p.id === id));
+  });
+});
+
+// ── Scheduling Sub-tabs ─────────────────────────────────
+document.querySelectorAll('#sched-stabs .stab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#sched-stabs .stab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const id = 'ssub-' + tab.dataset.ssub;
+    document.querySelectorAll('.ssp').forEach(p => p.classList.toggle('active', p.id === id));
+  });
+});
+
+// ── Scheduling form switchers ────────────────────────────
+switcher('sm-type', {class:'sm-class',exam:'sm-exam',lab:'sm-lab',change:'sm-change',reschedule:'sm-reschedule'});
+
+// ── Doc Sub-tabs (separate from advising sub-tabs) ──────
+document.querySelectorAll('#doc-stabs .stab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#doc-stabs .stab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const id = 'dsub-' + tab.dataset.dsub;
+    document.querySelectorAll('.dsp').forEach(p => p.classList.toggle('active', p.id === id));
+  });
+});
+
+// ── Doc switchers ─────────────────────────────────────
+switcher('fp-type', {registration:'fp-registration',withdrawal:'fp-withdrawal','credit-transfer':'fp-credit-transfer',exemption:'fp-exemption',internship:'fp-internship',capstone:'fp-capstone'});
+switcher('sr-action', {gpa:'sr-gpa-fields',correction:'sr-correction-fields'});
+
+switcher('cr-type',   {transfer:'cr-transfer','drop-add':'cr-dropadd',retake:'cr-retake'});
+switcher('int-type',  {internship:'int-intern',capstone:'int-cap',fyp:'int-fyp'});
+switcher('sup-type',  {session:'sup-session',records:'sup-records',faq:'sup-faq'});
+switcher('esc-type',  {detect:'esc-detect',redirect:'esc-redirect'});
+
+// ── Helpers ─────────────────────────────────────────────
+async function api(path, body) {
+  const opts = {headers:{'Content-Type':'application/json'}};
+  if (body) { opts.method='POST'; opts.body=JSON.stringify(body); }
+  return (await fetch(path, opts)).json();
+}
+
+function loading(spId, btnId, on) {
+  document.getElementById(spId).classList.toggle('on', on);
+  document.getElementById(btnId).disabled = on;
+}
+
+function result(outId, stId, text, risk) {
+  document.getElementById(outId).textContent = text;
+  const el = document.getElementById(stId);
+  if (risk) {
+    const cls = risk==='LOW'?'rL':risk==='HIGH'?'rH':'rM';
+    el.innerHTML = `<span class="risk ${cls}">${risk} RISK</span>`;
+  } else {
+    el.innerHTML = `<span style="color:var(--green);font-size:11px;font-weight:700">✓ Done</span>`;
+  }
+  // Push notification for every AI result
+  const short = text.length > 90 ? text.slice(0, 87) + '...' : text;
+  pushNotif('AI Response', short);
+}
+
+// ── Notification System ──────────────────────────────────
+const notifs = [];
+
+function pushNotif(title, body) {
+  notifs.unshift({title, body, time: new Date()});
+  if (notifs.length > 30) notifs.pop();
+  updateNotifUI();
+  // Browser notification if permission granted
+  if (Notification.permission === 'granted') {
+    new Notification(title, {body, icon: ''});
+  }
+}
+
+function updateNotifUI() {
+  const badge = document.getElementById('notif-badge');
+  const list = document.getElementById('notif-list');
+  if (notifs.length > 0) {
+    badge.textContent = notifs.length > 99 ? '99+' : notifs.length;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+  if (notifs.length === 0) {
+    list.innerHTML = '<div class="notif-empty">No notifications yet. Results from AI will appear here.</div>';
+    return;
+  }
+  list.innerHTML = notifs.map(n => {
+    const t = n.time.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    return `<div class="notif-item"><div class="ni-icon2">✦</div><div class="ni-body"><strong>${n.title} · ${t}</strong><span>${n.body}</span></div></div>`;
+  }).join('');
+}
+
+function clearAllNotifs() {
+  notifs.length = 0;
+  updateNotifUI();
+}
+
+function requestBrowserNotif() {
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') document.getElementById('notif-perm-btn').style.display = 'none';
+  });
+}
+
+// Bell toggle
+document.getElementById('notif-bell').addEventListener('click', e => {
+  e.stopPropagation();
+  const panel = document.getElementById('notif-panel');
+  panel.style.display = panel.style.display === 'none' ? '' : 'none';
+  // Show "Enable Alerts" button if permission not yet granted
+  const permBtn = document.getElementById('notif-perm-btn');
+  if (Notification.permission === 'default') permBtn.style.display = '';
+  else permBtn.style.display = 'none';
+});
+
+document.addEventListener('click', e => {
+  const panel = document.getElementById('notif-panel');
+  if (!panel.contains(e.target) && e.target.id !== 'notif-bell') {
+    panel.style.display = 'none';
+  }
+});
+
+// ── File Upload Handler ──────────────────────────────────
+let uploadedFile = null;
+
+function setupDropZone(zoneId, fileVar, accept, onFile) {
+  const zone = document.getElementById(zoneId);
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag');
+    const f = e.dataTransfer.files[0];
+    if (f) onFile(f);
+  });
+  zone.addEventListener('click', () => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = accept;
+    inp.onchange = () => { if (inp.files[0]) onFile(inp.files[0]); };
+    inp.click();
+  });
+}
+
+setupDropZone('upload-zone', null, '.pdf,.docx,.txt,.xlsx,.csv,.png,.jpg,.jpeg', f => {
+  uploadedFile = f;
+  document.querySelector('#upload-zone .upload-hint').textContent = '📎 ' + f.name;
+  document.querySelector('#upload-zone .upload-icon').textContent = '✅';
+});
+
+document.getElementById('btn-upload').addEventListener('click', async () => {
+  if (!uploadedFile) { pushNotif('Upload', 'Please select a file first.'); return; }
+  const spId = 'sp-upload', btnId = 'btn-upload';
+  loading(spId, btnId, true);
+  const fd = new FormData();
+  fd.append('file', uploadedFile);
+  fd.append('category', document.getElementById('ul-cat').value);
+  fd.append('student_id', document.getElementById('ul-sid').value);
+  try {
+    const res = await fetch('/api/upload', {method:'POST', body:fd});
+    const d = await res.json();
+    const resultEl = document.getElementById('upload-result');
+    const list = document.getElementById('upload-list');
+    if (d.filename) {
+      resultEl.innerHTML = `<div class="ib"><span class="ic">✅</span> File <strong>${d.filename}</strong> uploaded successfully.</div>`;
+      list.innerHTML += `<div class="upload-item">📎 ${d.filename} <span>✓ Saved</span></div>`;
+      pushNotif('File Uploaded', d.filename + ' saved to server.');
+    } else {
+      resultEl.innerHTML = `<div class="ib"><span class="ic">⚠</span> ${d.error || 'Upload failed.'}</div>`;
+    }
+    uploadedFile = null;
+    document.querySelector('#upload-zone .upload-hint').textContent = 'Drag & drop files here, or click to browse';
+    document.querySelector('#upload-zone .upload-icon').textContent = '📁';
+  } catch(e) { pushNotif('Upload Error', e.message); }
+  finally { loading(spId, btnId, false); }
+});
+
+// ── PDF Analyser Handler ─────────────────────────────────
+let pdfFile = null;
+
+setupDropZone('pdf-zone', null, '.pdf', f => {
+  pdfFile = f;
+  document.querySelector('#pdf-zone .upload-hint').textContent = '📄 ' + f.name;
+  document.querySelector('#pdf-zone .upload-icon').textContent = '✅';
+});
+
+document.getElementById('btn-pdf').addEventListener('click', async () => {
+  if (!pdfFile) { pushNotif('PDF', 'Please select a PDF file first.'); return; }
+  loading('sp-pdf', 'btn-pdf', true);
+  document.getElementById('out-pdf').textContent = 'AI is reading and analysing the PDF...';
+  const fd = new FormData();
+  fd.append('file', pdfFile);
+  fd.append('mode', document.getElementById('pdf-mode').value);
+  try {
+    const res = await fetch('/api/pdf/analyse', {method:'POST', body:fd});
+    const d = await res.json();
+    result('out-pdf', 'st-pdf', d.analysis || d.error || 'No response.');
+  } catch(e) { result('out-pdf','st-pdf','Error: '+e.message); }
+  finally { loading('sp-pdf','btn-pdf',false); }
+});
+
+// ── Email Sender Handler ─────────────────────────────────
+document.getElementById('btn-email').addEventListener('click', async () => {
+  const to = document.getElementById('email-to').value.trim();
+  const instruction = document.getElementById('email-instruction').value.trim();
+  if (!to || !instruction) { pushNotif('Email', 'Please fill in recipient and instruction.'); return; }
+  loading('sp-email','btn-email',true);
+  document.getElementById('out-email').textContent = 'AI is composing your email...';
+  try {
+    const d = await api('/api/email/send', {
+      to, instruction,
+      role: document.getElementById('email-role').value,
+      context: document.getElementById('email-context').value
+    });
+    if (d.sent) {
+      result('out-email','st-email', 'Email sent successfully!\n\nSubject: ' + d.subject + '\n\n' + d.body);
+      const badge = document.getElementById('email-sent-badge');
+      badge.style.display = '';
+      setTimeout(() => badge.style.display = 'none', 4000);
+      pushNotif('Email Sent', 'To: ' + to + ' | Subject: ' + d.subject);
+    } else {
+      result('out-email','st-email', '[PREVIEW — email not sent, configure .env to send]\n\nSubject: ' + (d.subject||'') + '\n\n' + (d.body||d.message||''));
+      pushNotif('Email Preview', 'Composed email for ' + to);
+    }
+  } catch(e) { result('out-email','st-email','Error: '+e.message); }
+  finally { loading('sp-email','btn-email',false); }
+});
+
+async function query(type, payload, outId, stId, spId, btnId) {
+  loading(spId, btnId, true);
+  document.getElementById(outId).textContent = 'AI is processing your request...';
+  try {
+    const d = await api('/api/advising/query', {type, ...payload});
+    result(outId, stId, d.response || d.message || 'No response.', d.riskLevel);
+  } catch(e) { result(outId, stId, 'Error: '+e.message); }
+  finally { loading(spId, btnId, false); }
+}
+
+// ── 1. Course Selection ──────────────────────────────────
+document.getElementById('btn-cs').addEventListener('click', () =>
+  query('course-selection', {
+    education: document.getElementById('cs-edu').value,
+    gpa: document.getElementById('cs-gpa').value,
+    interest: document.getElementById('cs-interest').value,
+    mathSkill: document.getElementById('cs-math').value
+  }, 'out-cs','st-cs','sp-cs','btn-cs')
+);
+
+// ── 2. Progression ───────────────────────────────────────
+document.getElementById('btn-prog').addEventListener('click', () => {
+  const sem = document.getElementById('prog-sem').value;
+  const cred = document.getElementById('prog-cred').value;
+  const cnt = document.getElementById('prog-cnt').value;
+  document.getElementById('prog-stats').innerHTML = `
+    <div class="sc"><div class="sv">${sem}</div><div class="sl">Semester</div></div>
+    <div class="sc"><div class="sv">${cred}</div><div class="sl">Credits Done</div></div>
+    <div class="sc"><div class="sv">${cnt}</div><div class="sl">Courses Done</div></div>
+    <div class="sc"><div class="sv">${Math.round(cred/120*100)}%</div><div class="sl">Progress</div></div>`;
+  query('academic-progression', {
+    semester: sem, completedCredits: cred, completedCourses: cnt,
+    remainingCourses: document.getElementById('prog-rem').value
+  }, 'out-prog','st-prog','sp-prog','btn-prog');
+});
+
+// ── 3. Credit Management ─────────────────────────────────
+document.getElementById('btn-cr').addEventListener('click', () => {
+  const t = document.getElementById('cr-type').value;
+  let payload = {creditType: t};
+  if (t==='transfer') {
+    payload = {...payload, course:document.getElementById('cr-t-course').value, credits:document.getElementById('cr-t-credits').value, grade:document.getElementById('cr-t-grade').value, targetCourse:document.getElementById('cr-t-target').value};
+  } else if (t==='drop-add') {
+    payload = {...payload, dropCourse:document.getElementById('cr-d-drop').value, addCourse:document.getElementById('cr-d-add').value, reason:document.getElementById('cr-d-reason').value, week:document.getElementById('cr-d-week').value};
+  } else {
+    payload = {...payload, course:document.getElementById('cr-r-course').value, grade:document.getElementById('cr-r-grade').value, gpa:document.getElementById('cr-r-gpa').value, attempts:document.getElementById('cr-r-att').value};
+  }
+  query('credit-management', payload, 'out-cr','st-cr','sp-cr','btn-cr');
+});
+
+// ── 4. Internship & Projects ─────────────────────────────
+document.getElementById('btn-int').addEventListener('click', () => {
+  const t = document.getElementById('int-type').value;
+  let payload = {subType: t};
+  if (t==='internship') {
+    payload = {...payload, semester:document.getElementById('int-sem').value, gpa:document.getElementById('int-gpa').value, credits:document.getElementById('int-cred').value, duration:document.getElementById('int-dur').value, domain:document.getElementById('int-dom').value};
+  } else if (t==='capstone') {
+    payload = {...payload, title:document.getElementById('cap-title').value, stack:document.getElementById('cap-stack').value, teamSize:document.getElementById('cap-team').value, supervisor:document.getElementById('cap-sup').value, description:document.getElementById('cap-desc').value};
+  } else {
+    payload = {...payload, area:document.getElementById('fyp-area').value, methodology:document.getElementById('fyp-meth').value, problem:document.getElementById('fyp-prob').value};
+  }
+  query('internship-projects', payload, 'out-int','st-int','sp-int','btn-int');
+});
+
+// ── 5. Academic Advising ─────────────────────────────────
+document.getElementById('btn-adv').addEventListener('click', () =>
+  query('academic-advising', {
+    currentSemester: document.getElementById('adv-sem').value,
+    gpa: document.getElementById('adv-gpa').value,
+    plannedCourses: document.getElementById('adv-plan').value,
+    creditsCompleted: document.getElementById('adv-cred').value,
+    focus: document.getElementById('adv-focus').value,
+    failedCourses: document.getElementById('adv-fail').value,
+    partTime: document.getElementById('adv-pt').value
+  }, 'out-adv','st-adv','sp-adv','btn-adv')
+);
+
+// ── 6. Advising Support ──────────────────────────────────
+document.getElementById('btn-sup').addEventListener('click', () => {
+  const t = document.getElementById('sup-type').value;
+  let payload = {subType: t};
+  if (t==='session') {
+    payload = {...payload, student:document.getElementById('sup-s-stu').value, advisor:document.getElementById('sup-s-adv').value, date:document.getElementById('sup-s-date').value, time:document.getElementById('sup-s-time').value, reason:document.getElementById('sup-s-reason').value};
+  } else if (t==='records') {
+    payload = {...payload, studentId:document.getElementById('sup-r-id').value, year:document.getElementById('sup-r-yr').value};
+  } else {
+    payload = {...payload, query:document.getElementById('sup-f-q').value};
+  }
+  query('advising-support', payload, 'out-sup','st-sup','sp-sup','btn-sup');
+});
+
+// ── 7. Escalation ────────────────────────────────────────
+document.getElementById('btn-esc').addEventListener('click', () => {
+  const t = document.getElementById('esc-type').value;
+  let payload = {subType: t};
+  if (t==='detect') {
+    payload = {...payload, gpa:document.getElementById('esc-gpa').value, failedCourses:document.getElementById('esc-fail').value, semester:document.getElementById('esc-sem').value, description:document.getElementById('esc-desc').value};
+  } else {
+    payload = {...payload, redirectTo:document.getElementById('esc-to').value, urgency:document.getElementById('esc-urg').value, reason:document.getElementById('esc-reason').value};
+  }
+  query('escalation', payload, 'out-esc','st-esc','sp-esc','btn-esc');
+});
+
+// ── Documentation: shared query helper ───────────────────
+async function docQuery(type, payload, outId, stId, spId, btnId) {
+  loading(spId, btnId, true);
+  document.getElementById(outId).textContent = 'AI is processing your request...';
+  try {
+    const d = await api('/api/documentation/query', {type, ...payload});
+    result(outId, stId, d.response || d.message || 'No response.');
+  } catch(e) { result(outId, stId, 'Error: '+e.message); }
+  finally { loading(spId, btnId, false); }
+}
+
+// 1. Form Processing
+document.getElementById('btn-fp').addEventListener('click', () => {
+  const t = document.getElementById('fp-type').value;
+  let p = {formType: t};
+  if (t==='registration')    p = {...p, studentId:document.getElementById('fp-r-id').value, name:document.getElementById('fp-r-name').value, programme:document.getElementById('fp-r-prog').value, semester:document.getElementById('fp-r-sem').value, courseCode:document.getElementById('fp-r-code').value, courseName:document.getElementById('fp-r-cname').value};
+  else if (t==='withdrawal')  p = {...p, studentId:document.getElementById('fp-w-id').value, course:document.getElementById('fp-w-course').value, reason:document.getElementById('fp-w-reason').value, week:document.getElementById('fp-w-week').value, detail:document.getElementById('fp-w-detail').value};
+  else if (t==='credit-transfer') p = {...p, studentId:document.getElementById('fp-ct-id').value, institution:document.getElementById('fp-ct-inst').value, course:document.getElementById('fp-ct-course').value, credits:document.getElementById('fp-ct-cred').value, grade:document.getElementById('fp-ct-grade').value, equiv:document.getElementById('fp-ct-equiv').value};
+  else if (t==='exemption')   p = {...p, studentId:document.getElementById('fp-ex-id').value, course:document.getElementById('fp-ex-course').value, basis:document.getElementById('fp-ex-basis').value, evidence:document.getElementById('fp-ex-evidence').value};
+  else if (t==='internship')  p = {...p, studentId:document.getElementById('fp-int-id').value, company:document.getElementById('fp-int-co').value, duration:document.getElementById('fp-int-dur').value, startDate:document.getElementById('fp-int-start').value, role:document.getElementById('fp-int-role').value, gpaStatus:document.getElementById('fp-int-gpa').value};
+  else                        p = {...p, groupId:document.getElementById('fp-cap-id').value, title:document.getElementById('fp-cap-title').value, supervisor:document.getElementById('fp-cap-sup').value, teamSize:document.getElementById('fp-cap-team').value, abstract:document.getElementById('fp-cap-abstract').value};
+  docQuery('form-processing', p, 'out-fp','st-fp','sp-fp','btn-fp');
+});
+
+// 2. Certificate & Letter Management
+document.getElementById('btn-cl').addEventListener('click', () =>
+  docQuery('cert-letter', {docType:document.getElementById('cl-type').value, studentId:document.getElementById('cl-id').value, name:document.getElementById('cl-name').value, programme:document.getElementById('cl-prog').value, year:document.getElementById('cl-year').value, purpose:document.getElementById('cl-purpose').value, requestedBy:document.getElementById('cl-reqby').value}, 'out-cl','st-cl','sp-cl','btn-cl')
+);
+
+// 3. Student Record Management
+document.getElementById('btn-sr').addEventListener('click', () => {
+  const a = document.getElementById('sr-action').value;
+  let p = {action:a, studentId:document.getElementById('sr-id').value, name:document.getElementById('sr-name').value};
+  if (a==='gpa') p = {...p, semester:document.getElementById('sr-sem').value, credits:document.getElementById('sr-cred').value, cgpa:document.getElementById('sr-cgpa').value};
+  if (a==='correction') p = {...p, field:document.getElementById('sr-field').value, correction:document.getElementById('sr-correction').value};
+  docQuery('student-records', p, 'out-sr','st-sr','sp-sr','btn-sr');
+});
+
+// 4. Document Storage & Archive
+document.getElementById('btn-ds').addEventListener('click', () =>
+  docQuery('doc-storage', {operation:document.getElementById('ds-op').value, docName:document.getElementById('ds-name').value, category:document.getElementById('ds-cat').value, studentId:document.getElementById('ds-sid').value, year:document.getElementById('ds-year').value, accessLevel:document.getElementById('ds-access').value, retention:document.getElementById('ds-retain').value}, 'out-ds','st-ds','sp-ds','btn-ds')
+);
+
+// 5. Document Search & Retrieval
+document.getElementById('btn-dsr').addEventListener('click', () =>
+  docQuery('doc-search', {searchBy:document.getElementById('dsr-by').value, value:document.getElementById('dsr-val').value, typeFilter:document.getElementById('dsr-type').value, statusFilter:document.getElementById('dsr-status').value}, 'out-dsr','st-dsr','sp-dsr','btn-dsr')
+);
+
+// 6. Query & Support
+document.getElementById('btn-qs').addEventListener('click', () =>
+  docQuery('query-support', {supportType:document.getElementById('qs-type').value, studentId:document.getElementById('qs-sid').value, referenceId:document.getElementById('qs-ref').value, query:document.getElementById('qs-q').value}, 'out-qs','st-qs','sp-qs','btn-qs')
+);
+
+// 7. Compliance & Deadline
+document.getElementById('btn-comp').addEventListener('click', () =>
+  docQuery('compliance', {checkType:document.getElementById('comp-type').value, docType:document.getElementById('comp-doc').value, week:document.getElementById('comp-week').value, semester:document.getElementById('comp-sem').value, studentId:document.getElementById('comp-sid').value}, 'out-comp','st-comp','sp-comp','btn-comp')
+);
+
+// 8. AI Document Processing
+document.getElementById('btn-aip').addEventListener('click', () =>
+  docQuery('ai-processing', {mode:document.getElementById('aip-mode').value, docType:document.getElementById('aip-doctype').value, studentId:document.getElementById('aip-sid').value, content:document.getElementById('aip-content').value}, 'out-aip','st-aip','sp-aip','btn-aip')
+);
+
+// 9. AI Document Generation
+document.getElementById('btn-aig').addEventListener('click', () =>
+  docQuery('ai-generation', {genType:document.getElementById('aig-type').value, name:document.getElementById('aig-name').value, studentId:document.getElementById('aig-sid').value, programme:document.getElementById('aig-prog').value, year:document.getElementById('aig-year').value, purpose:document.getElementById('aig-purpose').value, addressedTo:document.getElementById('aig-to').value}, 'out-aig','st-aig','sp-aig','btn-aig')
+);
+
+// 10. AI Smart Search
+document.getElementById('btn-ais').addEventListener('click', () =>
+  docQuery('ai-smart-search', {mode:document.getElementById('ais-mode').value, query:document.getElementById('ais-q').value, scope:document.getElementById('ais-scope').value, period:document.getElementById('ais-period').value}, 'out-ais','st-ais','sp-ais','btn-ais')
+);
+
+// 11. AI Chatbot
+document.getElementById('btn-cb').addEventListener('click', () =>
+  docQuery('chatbot', {topic:document.getElementById('cb-topic').value, question:document.getElementById('cb-q').value, studentId:document.getElementById('cb-sid').value, role:document.getElementById('cb-role').value}, 'out-cb','st-cb','sp-cb','btn-cb')
+);
+
+// 12. Access Control
+document.getElementById('btn-ac').addEventListener('click', () =>
+  docQuery('access-control', {action:document.getElementById('ac-action').value, role:document.getElementById('ac-role').value, userId:document.getElementById('ac-uid').value, category:document.getElementById('ac-cat').value, permission:document.getElementById('ac-perm').value}, 'out-ac','st-ac','sp-ac','btn-ac')
+);
+
+// 13. Notifications
+document.getElementById('btn-notif').addEventListener('click', () =>
+  docQuery('notification', {notifType:document.getElementById('notif-type').value, recipient:document.getElementById('notif-recv').value, studentId:document.getElementById('notif-sid').value, subject:document.getElementById('notif-subj').value, deadlineDate:document.getElementById('notif-date').value, message:document.getElementById('notif-msg').value}, 'out-notif','st-notif','sp-notif','btn-notif')
+);
+
+// 14. Dashboard & Analytics
+document.getElementById('btn-dash').addEventListener('click', () =>
+  docQuery('dashboard', {reportType:document.getElementById('dash-type').value, period:document.getElementById('dash-period').value, department:document.getElementById('dash-dept').value, filter:document.getElementById('dash-filter').value}, 'out-dash','st-dash','sp-dash','btn-dash')
+);
+
+// 15. Verification
+document.getElementById('btn-ver').addEventListener('click', () =>
+  docQuery('verification', {verType:document.getElementById('ver-type').value, docId:document.getElementById('ver-docid').value, studentId:document.getElementById('ver-sid').value, docType:document.getElementById('ver-doctype').value, year:document.getElementById('ver-year').value, code:document.getElementById('ver-code').value}, 'out-ver','st-ver','sp-ver','btn-ver')
+);
+
+// ── Scheduling: shared query helper ─────────────────────
+async function schedQuery(type, payload, outId, stId, spId, btnId) {
+  loading(spId, btnId, true);
+  document.getElementById(outId).textContent = 'AI is processing your request...';
+  try {
+    const d = await api('/api/scheduling/query', {type, ...payload});
+    result(outId, stId, d.response || d.message || 'No response.');
+  } catch(e) { result(outId, stId, 'Error: '+e.message); }
+  finally { loading(spId, btnId, false); }
+}
+
+// 1. Schedule Management
+document.getElementById('btn-sm').addEventListener('click', () => {
+  const t = document.getElementById('sm-type').value;
+  let p = {schedType: t};
+  if (t==='class')       p = {...p, courseCode:document.getElementById('sm-c-code').value, courseName:document.getElementById('sm-c-name').value, lecturer:document.getElementById('sm-c-lect').value, day:document.getElementById('sm-c-day').value, startTime:document.getElementById('sm-c-start').value, duration:document.getElementById('sm-c-dur').value, room:document.getElementById('sm-c-room').value, group:document.getElementById('sm-c-group').value, semester:document.getElementById('sm-c-sem').value};
+  else if (t==='exam')   p = {...p, courseCode:document.getElementById('sm-e-code').value, examType:document.getElementById('sm-e-etype').value, date:document.getElementById('sm-e-date').value, time:document.getElementById('sm-e-time').value, hall:document.getElementById('sm-e-hall').value, duration:document.getElementById('sm-e-dur').value};
+  else if (t==='lab')    p = {...p, labName:document.getElementById('sm-l-name').value, date:document.getElementById('sm-l-date').value, startTime:document.getElementById('sm-l-start').value, duration:document.getElementById('sm-l-dur').value, purpose:document.getElementById('sm-l-purpose').value, requestedBy:document.getElementById('sm-l-by').value};
+  else if (t==='change') p = {...p, original:document.getElementById('sm-ch-orig').value, reason:document.getElementById('sm-ch-reason').value, newDay:document.getElementById('sm-ch-day').value, newTime:document.getElementById('sm-ch-time').value, notes:document.getElementById('sm-ch-notes').value};
+  else                   p = {...p, course:document.getElementById('sm-rs-course').value, originalSlot:document.getElementById('sm-rs-orig').value, conflictType:document.getElementById('sm-rs-conflict').value, studentsAffected:document.getElementById('sm-rs-students').value, description:document.getElementById('sm-rs-desc').value};
+  schedQuery('schedule-management', p, 'out-sm','st-sm','sp-sm','btn-sm');
+});
+
+// 2. Notices & Announcements
+document.getElementById('btn-nc').addEventListener('click', () =>
+  schedQuery('notices', {noticeType:document.getElementById('nc-type').value, title:document.getElementById('nc-title').value, audience:document.getElementById('nc-audience').value, priority:document.getElementById('nc-priority').value, publishDate:document.getElementById('nc-date').value, expiryDate:document.getElementById('nc-expiry').value, category:document.getElementById('nc-cat').value, content:document.getElementById('nc-content').value}, 'out-nc','st-nc','sp-nc','btn-nc')
+);
+
+// 3. Reminders & Alerts
+document.getElementById('btn-rem').addEventListener('click', () =>
+  schedQuery('reminders', {reminderType:document.getElementById('rem-type').value, title:document.getElementById('rem-title').value, deadlineDate:document.getElementById('rem-date').value, daysBefore:document.getElementById('rem-days').value, targetGroup:document.getElementById('rem-group').value, channel:document.getElementById('rem-channel').value, frequency:document.getElementById('rem-freq').value, message:document.getElementById('rem-msg').value}, 'out-rem','st-rem','sp-rem','btn-rem')
+);
+
+// 4. Information Dissemination
+document.getElementById('btn-dis').addEventListener('click', () =>
+  schedQuery('dissemination', {mode:document.getElementById('dis-mode').value, title:document.getElementById('dis-title').value, channels:document.getElementById('dis-channel').value, segment:document.getElementById('dis-seg').value, segmentDetail:document.getElementById('dis-seg-detail').value, deliveryTime:document.getElementById('dis-time').value, scheduledDateTime:document.getElementById('dis-datetime').value, body:document.getElementById('dis-body').value}, 'out-dis','st-dis','sp-dis','btn-dis')
+);
+
+// 5. Archive & Logs
+document.getElementById('btn-arc').addEventListener('click', () =>
+  schedQuery('archive', {action:document.getElementById('arc-action').value, keyword:document.getElementById('arc-keyword').value, dateFrom:document.getElementById('arc-from').value, dateTo:document.getElementById('arc-to').value, category:document.getElementById('arc-cat').value, group:document.getElementById('arc-group').value, format:document.getElementById('arc-format').value}, 'out-arc','st-arc','sp-arc','btn-arc')
+);
+
+// 6. AI Scheduling
+document.getElementById('btn-ais-sch').addEventListener('click', () =>
+  schedQuery('ai-scheduling', {func:document.getElementById('ais-func').value, semester:document.getElementById('ais-sem').value, courses:document.getElementById('ais-courses').value, lecturers:document.getElementById('ais-lects').value, rooms:document.getElementById('ais-rooms').value, teachingDays:document.getElementById('ais-days').value, hoursPerDay:document.getElementById('ais-hrs').value, constraints:document.getElementById('ais-constraints').value}, 'out-ais-sch','st-ais-sch','sp-ais-sch','btn-ais-sch')
+);
+
+// 7. AI Announcement Generation
+document.getElementById('btn-aag').addEventListener('click', () =>
+  schedQuery('ai-announcement', {mode:document.getElementById('aag-mode').value, topic:document.getElementById('aag-topic').value, audience:document.getElementById('aag-audience').value, tone:document.getElementById('aag-tone').value, language:document.getElementById('aag-lang').value, details:document.getElementById('aag-details').value, template:document.getElementById('aag-template').value, draft:document.getElementById('aag-draft').value}, 'out-aag','st-aag','sp-aag','btn-aag')
+);
+
+// 8. AI Smart Notifications
+document.getElementById('btn-asn').addEventListener('click', () =>
+  schedQuery('ai-smart-notif', {mode:document.getElementById('asn-mode').value, target:document.getElementById('asn-target').value, topic:document.getElementById('asn-topic').value, gpa:document.getElementById('asn-gpa').value, deadline:document.getElementById('asn-deadline').value, pattern:document.getElementById('asn-pattern').value, priority:document.getElementById('asn-priority').value}, 'out-asn','st-asn','sp-asn','btn-asn')
+);
+
+// ── Communication: shared query helper ───────────────────
+async function commQuery(type, payload, outId, stId, spId, btnId) {
+  loading(spId, btnId, true);
+  document.getElementById(outId).textContent = 'AI is processing your request...';
+  try {
+    const d = await api('/api/communication/query', {type, ...payload});
+    result(outId, stId, d.response || d.message || 'No response.');
+  } catch(e) { result(outId, stId, 'Error: '+e.message); }
+  finally { loading(spId, btnId, false); }
+}
+
+// 1. Communication Coordination
+document.getElementById('btn-coord').addEventListener('click', () =>
+  commQuery('coordination', {commType:document.getElementById('coord-type').value, from:document.getElementById('coord-from').value, to:document.getElementById('coord-to').value, department:document.getElementById('coord-dept').value, urgency:document.getElementById('coord-urg').value, mode:document.getElementById('coord-mode').value, subject:document.getElementById('coord-subj').value, message:document.getElementById('coord-msg').value}, 'out-coord','st-coord','sp-coord','btn-coord')
+);
+
+// 2. Notice & Memo Circulation
+document.getElementById('btn-nm').addEventListener('click', () =>
+  commQuery('notice-memo', {docType:document.getElementById('nm-type').value, ref:document.getElementById('nm-ref').value, to:document.getElementById('nm-to').value, from:document.getElementById('nm-from').value, date:document.getElementById('nm-date').value, subject:document.getElementById('nm-subj').value, priority:document.getElementById('nm-priority').value, content:document.getElementById('nm-content').value}, 'out-nm','st-nm','sp-nm','btn-nm')
+);
+
+// 3. Meeting Management
+document.getElementById('btn-mtg').addEventListener('click', () =>
+  commQuery('meetings', {action:document.getElementById('mtg-action').value, title:document.getElementById('mtg-title').value, meetingType:document.getElementById('mtg-type').value, date:document.getElementById('mtg-date').value, time:document.getElementById('mtg-time').value, venue:document.getElementById('mtg-venue').value, duration:document.getElementById('mtg-dur').value, organiser:document.getElementById('mtg-org').value, participants:document.getElementById('mtg-pax').value, agenda:document.getElementById('mtg-agenda').value}, 'out-mtg','st-mtg','sp-mtg','btn-mtg')
+);
+
+// 4. Task & Follow-up Tracking
+document.getElementById('btn-task').addEventListener('click', () =>
+  commQuery('tasks', {action:document.getElementById('task-action').value, title:document.getElementById('task-title').value, assignee:document.getElementById('task-assignee').value, assignedBy:document.getElementById('task-by').value, dueDate:document.getElementById('task-due').value, priority:document.getElementById('task-priority').value, status:document.getElementById('task-status').value, notes:document.getElementById('task-notes').value}, 'out-task','st-task','sp-task','btn-task')
+);
+
+// 5. Communication Records
+document.getElementById('btn-rec').addEventListener('click', () =>
+  commQuery('records', {action:document.getElementById('rec-action').value, keyword:document.getElementById('rec-keyword').value, person:document.getElementById('rec-person').value, dateFrom:document.getElementById('rec-from').value, dateTo:document.getElementById('rec-to').value, commType:document.getElementById('rec-type').value, department:document.getElementById('rec-dept').value}, 'out-rec','st-rec','sp-rec','btn-rec')
+);
+
+// 6. External Coordination
+document.getElementById('btn-ext').addEventListener('click', () =>
+  commQuery('external', {coordType:document.getElementById('ext-type').value, from:document.getElementById('ext-from').value, to:document.getElementById('ext-to').value, subject:document.getElementById('ext-subj').value, urgency:document.getElementById('ext-urg').value, reference:document.getElementById('ext-ref').value, responseBy:document.getElementById('ext-by').value, detail:document.getElementById('ext-detail').value}, 'out-ext','st-ext','sp-ext','btn-ext')
+);
+
+// 7. AI Smart Communication
+document.getElementById('btn-aic').addEventListener('click', () =>
+  commQuery('ai-smart', {feature:document.getElementById('aic-feature').value, role:document.getElementById('aic-role').value, to:document.getElementById('aic-to').value, message:document.getElementById('aic-msg').value}, 'out-aic','st-aic','sp-aic','btn-aic')
+);
+
+// 8. AI Meeting Automation
+document.getElementById('btn-aim').addEventListener('click', () =>
+  commQuery('ai-meeting', {mode:document.getElementById('aim-mode').value, topic:document.getElementById('aim-topic').value, department:document.getElementById('aim-dept').value, participants:document.getElementById('aim-pax').value, duration:document.getElementById('aim-dur').value, preferredTime:document.getElementById('aim-time').value, format:document.getElementById('aim-format').value, notes:document.getElementById('aim-notes').value}, 'out-aim','st-aim','sp-aim','btn-aim')
+);
+
+// 9. AI Message Routing & Prioritization
+document.getElementById('btn-air').addEventListener('click', () =>
+  commQuery('ai-routing', {mode:document.getElementById('air-mode').value, subject:document.getElementById('air-subj').value, sender:document.getElementById('air-sender').value, audience:document.getElementById('air-audience').value, urgency:document.getElementById('air-urg').value, message:document.getElementById('air-msg').value}, 'out-air','st-air','sp-air','btn-air')
+);
+
+// ── Auto-load: reminders, channels, admin, faqs ──────────
+(async()=>{
+  try{const d=await api('/api/scheduling/reminders');const el=document.getElementById('sched-reminders');el.innerHTML='';(d.upcoming||[]).forEach(r=>{const s=document.createElement('span');s.className='chip';s.textContent=r;el.appendChild(s);});}catch(e){}
+})();
+(async()=>{
+  try{const d=await api('/api/communication/channels');const el=document.getElementById('comm-channels');el.innerHTML='';(d.channels||[]).forEach(c=>{const s=document.createElement('span');s.className='chip';s.textContent=c;el.appendChild(s);});}catch(e){}
+})();
+(async()=>{
+  try{
+    const d=await api('/api/advising/faqs');
+    const el=document.getElementById('faq-chips');
+    if(!el)return;
+    el.innerHTML='';
+    (d.faqs||[]).forEach(f=>{
+      const s=document.createElement('span');s.className='chip';s.textContent=f;s.style.cursor='pointer';
+      s.addEventListener('click',()=>{const i=document.getElementById('sup-f-q');if(i)i.value=f;});
+      el.appendChild(s);
+    });
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
